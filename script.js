@@ -23732,6 +23732,227 @@ function getPlayFridgeItemType(
     return null;
 }
 
+/* =========================================================
+   PARTY PAWS ENERGY WARNING
+========================================================= */
+
+function showPartyPawsEnergyWarning(
+    onYes,
+    onNo
+) {
+
+    const oldPopup =
+        document.getElementById(
+            "party-paws-energy-warning"
+        );
+
+    if (oldPopup) {
+        oldPopup.remove();
+    }
+
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.id =
+        "party-paws-energy-warning";
+
+
+    overlay.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.55);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+        z-index:999999;
+    `;
+
+
+    overlay.innerHTML = `
+
+        <div
+            style="
+                width:min(480px, 100%);
+                background:white;
+                border:
+                    2px solid
+                    var(
+                        --user-theme-color,
+                        #4fb5ae
+                    );
+                border-radius:24px;
+                padding:28px;
+                box-sizing:border-box;
+                text-align:center;
+                box-shadow:
+                    0 15px 50px
+                    rgba(0,0,0,.30);
+            "
+        >
+
+            <div
+                style="
+                    font-size:48px;
+                    margin-bottom:8px;
+                "
+            >
+                ⚠️
+            </div>
+
+
+            <h2
+                style="
+                    margin:0 0 16px 0;
+                    color:
+                        var(
+                            --user-theme-color,
+                            #4fb5ae
+                        );
+                    font-size:27px;
+                "
+            >
+                Party Paws Energy Effect
+            </h2>
+
+
+            <p
+                style="
+                    margin:0 0 14px 0;
+                    color:#53666d;
+                    font-size:17px;
+                    line-height:1.5;
+                "
+            >
+                Party Paws causes very fast
+                movement and visual effects
+                for 5 minutes.
+            </p>
+
+
+            <p
+                style="
+                    margin:0 0 24px 0;
+                    color:#53666d;
+                    font-size:17px;
+                    line-height:1.5;
+                    font-weight:bold;
+                "
+            >
+                This effect may be uncomfortable
+                or potentially trigger seizures
+                in people with photosensitivity.
+            </p>
+
+
+            <p
+                style="
+                    margin:0 0 22px 0;
+                    color:#17313a;
+                    font-size:18px;
+                    font-weight:bold;
+                "
+            >
+                Use the energy effect?
+            </p>
+
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:center;
+                    gap:14px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <button
+                    id="party-paws-no-button"
+                    type="button"
+
+                    style="
+                        padding:12px 22px;
+                        border:1px solid #d3dde0;
+                        border-radius:14px;
+                        background:white;
+                        color:#344349;
+                        font-size:16px;
+                        font-weight:bold;
+                        cursor:pointer;
+                    "
+                >
+                    No — Drink Without Effect
+                </button>
+
+
+                <button
+                    id="party-paws-yes-button"
+                    type="button"
+
+                    style="
+                        padding:12px 22px;
+                        border:none;
+                        border-radius:14px;
+                        background:
+                            var(
+                                --user-theme-color,
+                                #4fb5ae
+                            );
+                        color:white;
+                        font-size:16px;
+                        font-weight:bold;
+                        cursor:pointer;
+                    "
+                >
+                    Yes — Enable Effect
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(
+        overlay
+    );
+
+
+    document
+        .getElementById(
+            "party-paws-yes-button"
+        )
+        .onclick =
+        function() {
+
+            overlay.remove();
+
+            if (onYes) {
+                onYes();
+            }
+        };
+
+
+    document
+        .getElementById(
+            "party-paws-no-button"
+        )
+        .onclick =
+        function() {
+
+            overlay.remove();
+
+            if (onNo) {
+                onNo();
+            }
+        };
+}
+
 function startPlayFridgeItemDrag(
     event,
     basketIndex
@@ -23819,7 +24040,7 @@ function startPlayFridgeItemDrag(
     }
 
 
-    function stopDragging() {
+     function stopDragging(event) {
 
         const essaTarget =
             document.querySelector(
@@ -23902,25 +24123,60 @@ function startPlayFridgeItemDrag(
                         );
                 }
 
-                if (
+              if (
     pendingItem.itemName ===
     "Party Paws Energy"
 ) {
 
-    stats.superEnergyUntil =
-        Date.now() +
-        (
-            5 *
-            60 *
-            1000
-        );
-}
+    showPartyPawsEnergyWarning(
 
+        function() {
 
-                savePlayData(
-                    playData
+            stats.superEnergyUntil =
+    Date.now() +
+    (
+        10 *
+        1000
+    );
+
+            savePlayData(
+                playData
+            );
+
+            playFridgeFeedingBasket
+                .splice(
+                    basketIndex,
+                    1
                 );
 
+            renderPlayableEssaFocus(
+                pendingItem.essaId
+            );
+        },
+
+        function() {
+
+            savePlayData(
+                playData
+            );
+
+            playFridgeFeedingBasket
+                .splice(
+                    basketIndex,
+                    1
+                );
+
+            renderPlayableEssaFocus(
+                pendingItem.essaId
+            );
+        }
+
+    );
+
+    wasEaten = true;
+
+    return;
+}
 
                 playFridgeFeedingBasket
                     .splice(
