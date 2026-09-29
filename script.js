@@ -24,7 +24,7 @@ const playableEssas = [
     {
         id: "moocow",
         name: "MooCow",
-        image: "play-essas/moocow.png",
+        image: "play-essas/MooCow.png",
         fallbackIcon: "🐮",
         unlockLevel: 1
     },
@@ -6311,7 +6311,12 @@ function showVoidUnlockPopup() {
         };
 
 
-    document.body.appendChild(
+    const popupParent =
+        document.fullscreenElement ||
+        document.body;
+
+
+    popupParent.appendChild(
         overlay
     );
 }
@@ -12397,7 +12402,7 @@ function startPlayHouseTimers() {
                 }
 
             },
-            5000
+            800
         );
 
 
@@ -13112,12 +13117,13 @@ function wanderPlayHouseEssas() {
                     each wandering cycle.
                 */
                 if (
-                    Math.random() >
-                    0.82
-                ) {
+    !hasSuperEnergy &&
+    Math.random() >
+    0.82
+) {
 
-                    return;
-                }
+    return;
+}
 
 
                 const essaId =
@@ -13133,6 +13139,11 @@ const stats =
         playData,
         essaId
     );
+
+    const hasSuperEnergy =
+    Number(
+        stats.superEnergyUntil
+    ) > Date.now();
 
 if (
     arePlayEssaNeedsAtZero(
@@ -13151,10 +13162,22 @@ if (
 
 
                 const newPosition =
-                    findSafePlayHousePosition(
-                        houseData,
-                        essaId
-                    );
+    hasSuperEnergy
+        ? {
+            x:
+                8 +
+                Math.random() *
+                84,
+
+            floor:
+                5 +
+                Math.random() *
+                65
+        }
+        : findSafePlayHousePosition(
+            houseData,
+            essaId
+        );
 
 
                 houseData
@@ -13543,12 +13566,11 @@ height:285px;
 
     style="
         position:absolute;
-       right:-3%;
-        bottom:18%;
+       right:-7%;
+        bottom:15%;
 
-       width:300px;
-height:250px;
-
+        width:445px;
+height:528px;
         padding:0;
         border:none;
         background:transparent;
@@ -16984,25 +17006,31 @@ function makeVoidyHolidayPetShelfItems() {
 
                 return `
 
-                    <div
-                        class="voidy-holiday-pet-item"
+                   <div
+    class="voidy-holiday-pet-item"
 
-                        data-pet-id="${item.id}"
+    data-pet-id="${item.id}"
 
-                        style="
-                            position:relative;
+    onclick="
+        openVoidyPetCustomization(
+            '${item.id}'
+        )
+    "
 
-                            width:90px;
-                            height:105px;
+    style="
+        position:relative;
 
-                            display:flex;
-                            align-items:flex-end;
-                            justify-content:center;
+        width:90px;
+        height:105px;
 
-                            pointer-events:none;
-                        "
-                    >
+        display:flex;
+        align-items:flex-end;
+        justify-content:center;
 
+        cursor:pointer;
+        pointer-events:auto;
+    "
+>
                         <img
                             src="${item.image}"
 
@@ -17218,7 +17246,7 @@ function openVoidyStorePage(
 
                                 z-index:11;
 
-                                pointer-events:none;
+                                pointer-events:auto;
                             "
                         >
 
@@ -23770,6 +23798,20 @@ function startPlayFridgeItemDrag(
                         );
                 }
 
+                if (
+    pendingItem.itemName ===
+    "Party Paws Energy"
+) {
+
+    stats.superEnergyUntil =
+        Date.now() +
+        (
+            5 *
+            60 *
+            1000
+        );
+}
+
 
                 savePlayData(
                     playData
@@ -24150,9 +24192,13 @@ function showBackyardFrisbeeNeedsEssa() {
     `;
 
 
-    document.body.appendChild(
-        popup
-    );
+    const popupParent =
+    document.fullscreenElement ||
+    document.body;
+
+popupParent.appendChild(
+    popup
+);
 }
 
 /* =========================================================
@@ -35417,7 +35463,7 @@ function renderPlayableEssaFocus(essaId) {
     <div
     class="play-focus-essa-scale"
     style="
-        transform:translateY(-125px) scale(0.72);
+       transform:translateY(125px) scale(0.72);
         transform-origin:center top;
     "
 >

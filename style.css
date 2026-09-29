@@ -2185,3 +2185,29 @@ height: 335px !important;
         right: -10% !important;  
     }  
 }
+
+/* =========================================================
+   VOIDY DOOR — DESKTOP FULLSCREEN
+========================================================= */
+
+@media (min-height: 501px) {
+
+    main:fullscreen
+    #play-voidy-door {
+
+        width: 775px !important;
+        height: 825px !important;
+
+        right: -7% !important;
+        bottom: 16% !important;
+    }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+
+    body.play-mobile-fullscreen
+    .trainer-level-bar {
+
+        display: none !important;
+    }
+}
