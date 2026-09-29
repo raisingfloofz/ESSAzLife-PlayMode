@@ -23830,7 +23830,7 @@ function showPartyPawsEnergyWarning(
             >
                 Party Paws causes very fast
                 movement and visual effects
-                for 5 minutes.
+                for 10 seconds.
             </p>
 
 
