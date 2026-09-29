@@ -1,0 +1,17 @@
+{
+  "name": "ESSAzLife PlayMode",
+  "short_name": "PlayMode",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#ffffff",
+  "theme_color": "#4fb5ae",
+  "icons": [
+    {
+      "src": "MooCow.Icon.2.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <title>ESSAzLife-PlayMode</title>
     <link rel="stylesheet" href="style.css">
@@ -31,5 +32,12 @@
     </main>
 
     <script src="script.js"></script>
+    <script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+            navigator.serviceWorker.register("./service-worker.js");
+        });
+    }
+</script>
 </body>
 </html>
