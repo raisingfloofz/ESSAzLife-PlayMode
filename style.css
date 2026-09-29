@@ -260,6 +260,27 @@ main h1 {
 
 @media (max-height: 500px) and (orientation: landscape) {
 
+    body:not(.play-mobile-fullscreen)
+.play-focus-essa-scale {
+    transform:
+        translateY(-55px)
+        scale(0.72) !important;
+}
+     body.play-mobile-fullscreen
+.play-focus-essa {
+    top: 20px !important;
+}
+
+  body:not(.play-mobile-fullscreen)
+    #play-voidy-door {
+        width: 275px !important;
+        height: 260px !important;
+        right: -2% !important;
+        bottom: 14% !important;
+    }
+
+
+
     .trainer-level-bar {
         padding: 5px 10px !important;
         border-radius: 10px !important;
@@ -2179,10 +2200,10 @@ body.play-mobile-fullscreen .essa-tiles-screen {
     body.play-mobile-fullscreen  
     #play-voidy-door {  
   
-       width: 450px !important; 
-height: 335px !important; 
+      width: 300px !important;
+height: 260px !important;
   
-        right: -10% !important;  
+        right: 1% !important;
     }  
 }
 

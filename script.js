@@ -1072,9 +1072,13 @@ display:block;
     `;
 
 
-    document.body.appendChild(
-        overlay
-    );
+    const popupHost =
+    document.fullscreenElement ||
+    document.body;
+
+popupHost.appendChild(
+    overlay
+);
 }
 
    /* =========================================================
@@ -2331,6 +2335,35 @@ function showHelp() {
                     ▶️ Watch Tutorial
                 </button>
 
+                <button
+    type="button"
+
+    onclick="
+        openEmergencyBypass()
+    "
+
+    style="
+        padding:
+            12px 22px;
+
+        border:
+            2px solid #b83232;
+
+        border-radius:14px;
+
+        background:white;
+
+        color:#b83232;
+
+        font-size:16px;
+        font-weight:bold;
+
+        cursor:pointer;
+    "
+>
+🎟️ Enter Code
+</button>
+
 
                 <button
                     type="button"
@@ -2374,6 +2407,916 @@ function showHelp() {
 
     document.body.appendChild(
         overlay
+    );
+}
+
+function openEmergencyBypass() {
+
+    document
+        .getElementById(
+            "play-emergency-bypass-popup"
+        )
+        ?.remove();
+
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+
+    overlay.id =
+        "play-emergency-bypass-popup";
+
+
+    overlay.style.cssText = `
+        position:fixed;
+        inset:0;
+
+        background:
+            rgba(0,0,0,.72);
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        padding:20px;
+
+        box-sizing:border-box;
+
+        z-index:1000001;
+    `;
+
+
+    overlay.innerHTML = `
+
+        <div
+            style="
+                width:
+                    min(
+                        430px,
+                        92vw
+                    );
+
+                background:white;
+
+                border-radius:24px;
+
+                padding:28px;
+
+                box-sizing:border-box;
+
+                text-align:center;
+
+                box-shadow:
+                    0 18px 50px
+                    rgba(0,0,0,.4);
+            "
+        >
+
+           <div
+    style="
+        font-size:42px;
+
+        margin-bottom:8px;
+    "
+>
+    🎟️
+</div>
+
+
+<h2
+    style="
+        margin:
+            0 0 10px;
+
+        color:#4fb5ae;
+    "
+>
+    Enter Code
+</h2>
+
+
+            <p
+                style="
+                    margin:
+                        0 0 20px;
+
+                    color:#68777b;
+
+                    line-height:1.5;
+                "
+            >
+                Enter your
+                ESSAzLife code.
+            </p>
+
+
+            <input
+                id="emergency-bypass-code"
+
+                type="password"
+
+                placeholder="Enter Your Code Here"
+
+                autocomplete="off"
+
+                style="
+                    width:100%;
+
+                    padding:12px;
+
+                    margin-bottom:14px;
+
+                    box-sizing:border-box;
+
+                    border:
+                        2px solid #d3dde0;
+
+                    border-radius:12px;
+
+                    font-size:16px;
+                "
+            >
+
+
+            <div
+                id="emergency-bypass-message"
+
+                style="
+                    min-height:22px;
+
+                    margin-bottom:14px;
+
+                    color:#b83232;
+
+                    font-size:14px;
+
+                    font-weight:bold;
+                "
+            ></div>
+
+
+            <div
+                style="
+                    display:flex;
+
+                    gap:10px;
+
+                    justify-content:center;
+
+                    flex-wrap:wrap;
+                "
+            >
+
+                <button
+                    type="button"
+
+                    onclick="
+                        validateEmergencyBypassCode()
+                    "
+
+                    style="
+                        padding:
+                            12px 22px;
+
+                        border:none;
+
+                        border-radius:14px;
+
+                        background:#b83232;
+
+                        color:white;
+
+                        font-size:16px;
+
+                        font-weight:bold;
+
+                        cursor:pointer;
+                    "
+                >
+                    🔓 Continue
+                </button>
+
+
+                <button
+                    type="button"
+
+                    onclick="
+                        document
+                            .getElementById(
+                                'play-emergency-bypass-popup'
+                            )
+                            ?.remove()
+                    "
+
+                    style="
+                        padding:
+                            12px 22px;
+
+                        border:none;
+
+                        border-radius:14px;
+
+                        background:#eef3f4;
+
+                        color:#17313a;
+
+                        font-size:16px;
+
+                        font-weight:bold;
+
+                        cursor:pointer;
+                    "
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    const popupHost =
+        document.fullscreenElement ||
+        document.body;
+
+
+    popupHost.appendChild(
+        overlay
+    );
+}
+
+function validateEmergencyBypassCode() {
+
+    const codeInput =
+        document.getElementById(
+            "emergency-bypass-code"
+        );
+
+
+    const message =
+        document.getElementById(
+            "emergency-bypass-message"
+        );
+
+
+    if (
+        !codeInput ||
+        !message
+    ) {
+
+        return;
+    }
+
+
+    const enteredCode =
+        codeInput.value.trim();
+
+
+    /* =========================================
+       ADMIN CODE
+    ========================================= */
+
+    if (
+        enteredCode ===
+        "ELPMMooCowDaisyBelle"
+    ) {
+
+        message.style.color =
+            "#2d8a57";
+
+
+        message.textContent =
+            "✅ Admin access granted.";
+
+
+        setTimeout(
+            function() {
+
+                showEmergencyBypassAdminControls();
+
+            },
+            400
+        );
+
+
+        return;
+    }
+
+
+    /* =========================================
+       TESTER CODE
+    ========================================= */
+
+   if (
+    enteredCode ===
+    "ESSAzLifeTesters2026"
+) {
+
+    const playData =
+        getSavedPlayData();
+
+
+    playData.coins =
+        (Number(
+            playData.coins
+        ) || 0) +
+        100000;
+
+
+    savePlayData(
+        playData
+    );
+
+
+    document
+        .getElementById(
+            "play-emergency-bypass-popup"
+        )
+        ?.remove();
+
+
+    const testerMessageKey =
+        userStorageKey(
+            "testerThankYouMessageSeen"
+        );
+
+
+    const hasSeenTesterMessage =
+        testerMessageKey
+            ? localStorage.getItem(
+                testerMessageKey
+            ) === "true"
+            : false;
+
+
+    if (
+        !hasSeenTesterMessage
+    ) {
+
+        localStorage.setItem(
+            testerMessageKey,
+            "true"
+        );
+
+
+        showTesterCodeThankYouPopup();
+
+    } else {
+
+        renderPlayRoom();
+
+    }
+
+
+    return;
+}
+    /* =========================================
+       WRONG CODE
+    ========================================= */
+
+    message.style.color =
+        "#b83232";
+
+
+    message.textContent =
+        "❌ Unrecognized ESSAzLife code.";
+}
+
+function showTesterCodeThankYouPopup() {
+
+    document
+        .getElementById(
+            "tester-code-thank-you-popup"
+        )
+        ?.remove();
+
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+
+    overlay.id =
+        "tester-code-thank-you-popup";
+
+
+    overlay.style.cssText = `
+        position:fixed;
+        inset:0;
+
+        background:
+            rgba(0,0,0,.72);
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        padding:20px;
+
+        box-sizing:border-box;
+
+        z-index:1000002;
+    `;
+
+
+    overlay.innerHTML = `
+
+        <div
+            style="
+                width:
+                    min(
+                        500px,
+                        92vw
+                    );
+
+                max-height:90vh;
+                overflow-y:auto;
+
+                background:white;
+
+                border-radius:24px;
+
+                padding:28px;
+
+                box-sizing:border-box;
+
+                text-align:center;
+
+                box-shadow:
+                    0 18px 50px
+                    rgba(0,0,0,.4);
+            "
+        >
+
+            <div
+                style="
+                    font-size:46px;
+                    margin-bottom:8px;
+                "
+            >
+                🪙
+            </div>
+
+
+            <h2
+                style="
+                    margin:
+                        0 0 16px;
+
+                    color:#4fb5ae;
+                "
+            >
+                A Message From Raising Floofz
+            </h2>
+
+
+            <p
+                style="
+                    margin:
+                        0 0 22px;
+
+                    color:#58686e;
+
+                    font-size:16px;
+                    line-height:1.65;
+
+                    text-align:left;
+                "
+            >
+                September 29, 2026
+                <br><br>
+                Hey, It's me, Raising Floofz.
+                I just wanted to thank you for
+                being a tester. Here's 100,000
+                coins to use as you please.
+                You can reuse this code as many
+                times as you want throughout
+                the game.
+
+                <br><br>
+
+                But remember you will still
+                have to earn the levels to
+                unlock items on your own.
+
+                <br><br>
+
+                Please don't share this code
+                with <strong>ANYONE</strong>
+                who is not a tester.
+
+                <br><br>
+
+                Thanks,<br>
+                <strong>Bia</strong>
+            </p>
+
+
+            <button
+                type="button"
+
+                onclick="
+                    document
+                        .getElementById(
+                            'tester-code-thank-you-popup'
+                        )
+                        ?.remove();
+
+                    renderPlayRoom();
+                "
+
+                style="
+                    padding:
+                        12px 24px;
+
+                    border:none;
+                    border-radius:14px;
+
+                    background:#4fb5ae;
+                    color:white;
+
+                    font-size:16px;
+                    font-weight:bold;
+
+                    cursor:pointer;
+                "
+            >
+                Thanks! 🐾
+            </button>
+
+        </div>
+
+    `;
+
+
+    const popupHost =
+        document.fullscreenElement ||
+        document.body;
+
+
+    popupHost.appendChild(
+        overlay
+    );
+}
+
+function showEmergencyBypassAdminControls() {
+
+    const popup =
+        document.getElementById(
+            "play-emergency-bypass-popup"
+        );
+
+
+    if (!popup) {
+        return;
+    }
+
+
+    const card =
+        popup.firstElementChild;
+
+
+    if (!card) {
+        return;
+    }
+
+
+    card.innerHTML = `
+
+        <div
+            style="
+                font-size:42px;
+                margin-bottom:8px;
+            "
+        >
+            🐮
+        </div>
+
+
+        <h2
+            style="
+                margin:
+                    0 0 10px;
+
+                color:#4fb5ae;
+            "
+        >
+            Admin Code Accepted
+        </h2>
+
+
+        <p
+            style="
+                margin:
+                    0 0 20px;
+
+                color:#68777b;
+
+                line-height:1.5;
+            "
+        >
+            Choose your Trainer Level
+            and Coin Balance.
+        </p>
+
+
+        <input
+            id="emergency-bypass-level"
+
+            type="number"
+
+            min="1"
+
+            step="1"
+
+            placeholder="Trainer Level"
+
+            style="
+                width:100%;
+
+                padding:12px;
+
+                margin-bottom:12px;
+
+                box-sizing:border-box;
+
+                border:
+                    2px solid #d3dde0;
+
+                border-radius:12px;
+
+                font-size:16px;
+            "
+        >
+
+
+        <input
+            id="emergency-bypass-coins"
+
+            type="number"
+
+            min="0"
+
+            step="1"
+
+            placeholder="Coin Balance"
+
+            style="
+                width:100%;
+
+                padding:12px;
+
+                margin-bottom:14px;
+
+                box-sizing:border-box;
+
+                border:
+                    2px solid #d3dde0;
+
+                border-radius:12px;
+
+                font-size:16px;
+            "
+        >
+
+
+        <div
+            id="emergency-bypass-message"
+
+            style="
+                min-height:22px;
+
+                margin-bottom:14px;
+
+                color:#b83232;
+
+                font-size:14px;
+
+                font-weight:bold;
+            "
+        ></div>
+
+
+        <div
+            style="
+                display:flex;
+
+                gap:10px;
+
+                justify-content:center;
+
+                flex-wrap:wrap;
+            "
+        >
+
+            <button
+                type="button"
+
+                onclick="
+                    activateEmergencyBypass()
+                "
+
+                style="
+                    padding:
+                        12px 22px;
+
+                    border:none;
+
+                    border-radius:14px;
+
+                    background:#4fb5ae;
+
+                    color:white;
+
+                    font-size:16px;
+
+                    font-weight:bold;
+
+                    cursor:pointer;
+                "
+            >
+                Apply
+            </button>
+
+
+            <button
+                type="button"
+
+                onclick="
+                    document
+                        .getElementById(
+                            'play-emergency-bypass-popup'
+                        )
+                        ?.remove()
+                "
+
+                style="
+                    padding:
+                        12px 22px;
+
+                    border:none;
+
+                    border-radius:14px;
+
+                    background:#eef3f4;
+
+                    color:#17313a;
+
+                    font-size:16px;
+
+                    font-weight:bold;
+
+                    cursor:pointer;
+                "
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    `;
+}
+
+function activateEmergencyBypass() {
+
+    const levelInput =
+        document.getElementById(
+            "emergency-bypass-level"
+        );
+
+
+    const coinsInput =
+        document.getElementById(
+            "emergency-bypass-coins"
+        );
+
+
+    const message =
+        document.getElementById(
+            "emergency-bypass-message"
+        );
+
+
+    if (
+        !levelInput ||
+        !coinsInput ||
+        !message
+    ) {
+
+        return;
+    }
+
+
+    const requestedLevel =
+        Number(
+            levelInput.value
+        );
+
+
+    const requestedCoins =
+        Number(
+            coinsInput.value
+        );
+
+
+    /* -------------------------
+       CHECK TRAINER LEVEL
+    ------------------------- */
+
+    if (
+        !Number.isInteger(
+            requestedLevel
+        ) ||
+        requestedLevel < 1
+    ) {
+
+        message.style.color =
+            "#b83232";
+
+        message.textContent =
+            "❌ Enter a valid Trainer Level.";
+
+        return;
+    }
+
+
+    /* -------------------------
+       CHECK COIN BALANCE
+    ------------------------- */
+
+    if (
+        !Number.isInteger(
+            requestedCoins
+        ) ||
+        requestedCoins < 0
+    ) {
+
+        message.style.color =
+            "#b83232";
+
+        message.textContent =
+            "❌ Enter a valid Coin Balance.";
+
+        return;
+    }
+
+
+    /* -------------------------
+       APPLY ADMIN CHANGES
+    ------------------------- */
+
+    const playData =
+        getSavedPlayData();
+
+
+    playData.trainerLevel =
+        requestedLevel;
+
+
+    playData.trainerXP =
+        0;
+
+
+    playData.coins =
+        requestedCoins;
+
+
+    savePlayData(
+        playData
+    );
+
+
+    /* -------------------------
+       SUCCESS
+    ------------------------- */
+
+    message.style.color =
+        "#2d8a57";
+
+
+    message.textContent =
+        "✅ Admin changes applied!";
+
+
+    setTimeout(
+        function() {
+
+            document
+                .getElementById(
+                    "play-emergency-bypass-popup"
+                )
+                ?.remove();
+
+
+            renderPlayRoom();
+
+        },
+        700
     );
 }
 
@@ -7494,22 +8437,40 @@ function renderPlayableEssaCollection() {
 
 
     const playData =
-        getSavedPlayData();
+    getSavedPlayData();
 
 
-    const unlockedEssas =
+const houseData =
+    getSavedPlayHouseData();
+
+
+const unlockedEssas =
     getAllPlayableEssas()
         .filter(
             function(essa) {
 
-                return playData
-                    .unlockedEssaIds
-                    .includes(
-                        essa.id
-                    );
+                const isUnlocked =
+                    playData
+                        .unlockedEssaIds
+                        .includes(
+                            essa.id
+                        );
+
+
+                const isInKennel =
+                    houseData
+                        .essaRooms[
+                            essa.id
+                        ] ===
+                    "kennel";
+
+
+                return (
+                    isUnlocked &&
+                    !isInKennel
+                );
             }
         );
-
 
     const cards =
         unlockedEssas
@@ -9713,10 +10674,10 @@ const PLAY_MAX_OFFLINE_DECAY_HOURS =
 const PLAY_NEED_DECAY = {
 
     food:
-        3.0,
+        0.7,
 
     water:
-        3.5,
+        0.8,
 
     cleanliness:
         1.5,
@@ -9725,7 +10686,6 @@ const PLAY_NEED_DECAY = {
         2.5
 
 };
-
 
 /* =========================================================
    HOUSE STORAGE KEY
@@ -10430,16 +11390,18 @@ function getSavedPlayHouseData() {
 
 
                 const validRoom =
-                    playRooms.some(
-                        function(room) {
+    roomId ===
+        "kennel" ||
+    playRooms.some(
+        function(room) {
 
-                            return (
-                                room.id ===
-                                roomId
-                            );
+            return (
+                room.id ===
+                roomId
+            );
 
-                        }
-                    );
+        }
+    );
 
 
                 if (!validRoom) {
@@ -16968,43 +17930,55 @@ function makeVoidyCustomEssaShelfItems() {
 
 
             // OCCUPIED SLOT
-            if (savedEssa) {
+           if (savedEssa) {
 
-                return `
+    return `
 
-                    <div
-                        style="
-                            width:90px;
-                            height:80px;
+        <div
+            onclick="
+                openVoidyCustomEssaDetails(
+                    '${savedEssa.id}'
+                )
+            "
 
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                        "
-                    >
+            style="
+                width:90px;
+                height:80px;
 
-                        <img
-                            src="${savedEssa.image}"
+                display:flex;
+                align-items:center;
+                justify-content:center;
 
-                            alt="${escapeHTML(savedEssa.name)}"
+                cursor:pointer;
+            "
+        >
 
-                            title="${escapeHTML(savedEssa.name)}"
+            <img
+                src="${savedEssa.image}"
 
-                            style="
-                                display:block;
+                alt="${escapeHTML(savedEssa.name)}"
 
-                                max-width:85px;
-                                max-height:75px;
+                title="${escapeHTML(savedEssa.name)}"
 
-                                object-fit:contain;
-                            "
-                        >
+                draggable="false"
 
-                    </div>
+                style="
+                    display:block;
 
-                `;
+                    max-width:85px;
+                    max-height:75px;
 
-            }
+                    object-fit:contain;
+
+                    pointer-events:none;
+                "
+            >
+
+        </div>
+
+    `;
+
+}
 
 
             // UNLOCKED + EMPTY SLOT
@@ -17053,6 +18027,331 @@ function makeVoidyCustomEssaShelfItems() {
 
         .join("");
 
+}
+
+function openVoidyCustomEssaDetails(
+    essaId
+) {
+
+    const customEssas =
+        getSavedCustomPlayEssas();
+
+
+    if (
+        customEssas.length === 0
+    ) {
+
+        return;
+    }
+
+
+    const currentIndex =
+        customEssas.findIndex(
+            function(essa) {
+
+                return (
+                    String(
+                        essa.id
+                    ) ===
+                    String(
+                        essaId
+                    )
+                );
+
+            }
+        );
+
+
+    if (
+        currentIndex === -1
+    ) {
+
+        return;
+    }
+
+
+    const essa =
+        customEssas[
+            currentIndex
+        ];
+
+
+    const previousEssa =
+        customEssas[
+            (
+                currentIndex -
+                1 +
+                customEssas.length
+            ) %
+            customEssas.length
+        ];
+
+
+    const nextEssa =
+        customEssas[
+            (
+                currentIndex +
+                1
+            ) %
+            customEssas.length
+        ];
+
+
+    document
+        .getElementById(
+            "voidy-custom-essa-details-popup"
+        )
+        ?.remove();
+
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+
+    overlay.id =
+        "voidy-custom-essa-details-popup";
+
+
+    overlay.style.cssText = `
+        position:fixed;
+        inset:0;
+
+        background:
+            rgba(0,0,0,.65);
+
+        display:flex;
+        align-items:center;
+        justify-content:center;
+
+        padding:20px;
+
+        box-sizing:border-box;
+
+        z-index:100002;
+    `;
+
+
+    overlay.innerHTML = `
+
+        <div
+            style="
+                position:relative;
+
+                width:
+                    min(
+                        480px,
+                        92vw
+                    );
+
+                background:white;
+
+                border-radius:24px;
+
+                padding:28px;
+
+                box-sizing:border-box;
+
+                text-align:center;
+
+                box-shadow:
+                    0 18px 50px
+                    rgba(0,0,0,.35);
+            "
+        >
+
+
+            <button
+                type="button"
+
+                onclick="
+                    document
+                        .getElementById(
+                            'voidy-custom-essa-details-popup'
+                        )
+                        ?.remove()
+                "
+
+                style="
+                    position:absolute;
+
+                    top:14px;
+                    right:14px;
+
+                    width:40px;
+                    height:40px;
+
+                    border:none;
+                    border-radius:50%;
+
+                    background:#eef3f4;
+
+                    font-size:22px;
+                    font-weight:bold;
+
+                    cursor:pointer;
+                "
+            >
+                ×
+            </button>
+
+
+            <button
+                type="button"
+
+                onclick="
+                    openVoidyCustomEssaDetails(
+                        '${previousEssa.id}'
+                    )
+                "
+
+                aria-label="Previous Custom ESSA"
+
+                style="
+                    position:absolute;
+
+                    left:18px;
+                    top:45%;
+
+                    width:46px;
+                    height:46px;
+
+                    border:none;
+                    border-radius:50%;
+
+                    background:#eef3f4;
+                    color:#17313a;
+
+                    font-size:28px;
+                    font-weight:bold;
+
+                    cursor:pointer;
+
+                    z-index:5;
+                "
+            >
+                ‹
+            </button>
+
+
+            <button
+                type="button"
+
+                onclick="
+                    openVoidyCustomEssaDetails(
+                        '${nextEssa.id}'
+                    )
+                "
+
+                aria-label="Next Custom ESSA"
+
+                style="
+                    position:absolute;
+
+                    right:18px;
+                    top:45%;
+
+                    width:46px;
+                    height:46px;
+
+                    border:none;
+                    border-radius:50%;
+
+                    background:#eef3f4;
+                    color:#17313a;
+
+                    font-size:28px;
+                    font-weight:bold;
+
+                    cursor:pointer;
+
+                    z-index:5;
+                "
+            >
+                ›
+            </button>
+
+
+            <img
+                src="${essa.image}"
+
+                alt="${escapeHTML(
+                    essa.name
+                )}"
+
+                draggable="false"
+
+                style="
+                    width:180px;
+
+                    max-width:55%;
+
+                    height:180px;
+
+                    object-fit:contain;
+                "
+            >
+
+
+            <h2
+                style="
+                    margin:
+                        12px 0 4px;
+
+                    color:#17313a;
+                "
+            >
+                ${escapeHTML(
+                    essa.name
+                )}
+
+                ${essa.gender || ""}
+            </h2>
+
+
+            <div
+                style="
+                    margin-top:8px;
+
+                    color:#58686e;
+
+                    font-size:15px;
+
+                    line-height:1.6;
+                "
+            >
+
+                <div>
+                    <strong>
+                        Custom ESSA
+                    </strong>
+                </div>
+
+
+                <div>
+                    Slot
+                    #${Number(
+                        essa.slotNumber
+                    ) || "?"}
+                </div>
+
+            </div>
+
+
+        </div>
+
+    `;
+
+
+    const popupHost =
+        document.fullscreenElement ||
+        document.body;
+
+
+    popupHost.appendChild(
+        overlay
+    );
 }
 
 function makeVoidyHolidayPetShelfItems() {
@@ -17454,12 +18753,12 @@ function openVoidyStorePage(
                                 position:absolute;
 
                                 top:10px;
-                                right:15%;
+                                right:10%;
 
                                 transform:none;
 
                                 padding:
-                                    12px 22px;
+    8px 14px;
 
                                 border:
                                     3px solid
@@ -17483,7 +18782,7 @@ function openVoidyStorePage(
                                     #17313a;
 
                                 font-size:
-                                    16px;
+    12px;
 
                                 font-weight:
                                     900;
@@ -17495,6 +18794,56 @@ function openVoidyStorePage(
                         >
                             🐾 Stash-an-ESSA
                         </button>
+
+                        <button
+    type="button"
+
+    onclick="
+        openVoidyKennelHeadCount()
+    "
+
+    style="
+        position:absolute;
+
+        top:52px;
+right:10%;
+
+        transform:none;
+
+        padding:
+    8px 14px;
+
+        border:
+            3px solid
+            var(
+                --user-theme-color,
+                #4fb5ae
+            );
+
+        border-radius:
+            999px;
+
+        background:
+            rgba(
+                255,
+                255,
+                255,
+                .94
+            );
+
+        color:#17313a;
+
+        font-size:
+    12px;
+        font-weight:900;
+
+        cursor:pointer;
+
+        z-index:100;
+    "
+>
+    📋 Head-Count
+</button>
 
                     `
                     : ""
@@ -18528,16 +19877,20 @@ function storeEssaInVoidyKennel(
 
 
     const essa =
-        getAllPlayableEssas()
-            .find(
-                function(item) {
+    getAllPlayableEssas()
+        .find(
+            function(item) {
 
-                    return (
-                        item.id ===
+                return (
+                    String(
+                        item.id
+                    ) ===
+                    String(
                         essaId
-                    );
-                }
-            );
+                    )
+                );
+            }
+        );
 
 
     if (!essa) {
@@ -18548,14 +19901,17 @@ function storeEssaInVoidyKennel(
     // MAKE SURE THE USER OWNS THIS ESSA
 
     if (
-        !playData
-            .unlockedEssaIds
-            .includes(
-                essaId
-            )
-    ) {
-        return;
-    }
+    !playData
+        .unlockedEssaIds
+        .includes(
+            essaId
+        ) &&
+    !isCustomPlayEssa(
+        essaId
+    )
+) {
+    return;
+}
 
 
     // MOVE ESSA OUT OF THE HOUSE
@@ -18714,9 +20070,13 @@ function showVoidyRetrievalMessage(
     `;
 
 
-    document.body.appendChild(
-        overlay
-    );
+    const popupHost =
+    document.fullscreenElement ||
+    document.body;
+
+popupHost.appendChild(
+    overlay
+);
 
 
     setTimeout(
@@ -18829,9 +20189,13 @@ function showVoidyLockedItemMessage() {
     `;
 
 
-    document.body.appendChild(
-        overlay
-    );
+    const popupHost =
+    document.fullscreenElement ||
+    document.body;
+
+popupHost.appendChild(
+    overlay
+);
 
 
     setTimeout(
@@ -18970,9 +20334,13 @@ function showVoidyDownloadablesMessage() {
     `;
 
 
-    document.body.appendChild(
-        overlay
-    );
+    const popupHost =
+    document.fullscreenElement ||
+    document.body;
+
+popupHost.appendChild(
+    overlay
+);
 
 }
 
@@ -19369,7 +20737,647 @@ function openVoidyKennelRetrievePopup(
     `;
 
 
-    document.body.appendChild(
+   const popupHost =
+    document.fullscreenElement ||
+    document.body;
+
+popupHost.appendChild(
+    overlay
+);
+}
+
+function openVoidyKennelHeadCount() {
+
+    document
+        .getElementById(
+            "voidy-kennel-head-count-popup"
+        )
+        ?.remove();
+
+
+    const houseData =
+        getSavedPlayHouseData();
+
+
+    const playData =
+        getSavedPlayData();
+
+
+    /* =============================================
+       GET CURRENT OWNED COLLECTION
+    ============================================= */
+
+    const collectionEssas =
+        getAllPlayableEssas()
+            .filter(
+                function(essa) {
+
+                    const isCustom =
+                        essa.custom === true;
+
+
+                    const isOwned =
+                        playData
+                            .unlockedEssaIds
+                            .some(
+                                function(id) {
+
+                                    return (
+                                        String(id) ===
+                                        String(essa.id)
+                                    );
+                                }
+                            );
+
+
+                    return (
+                        isCustom ||
+                        isOwned
+                    );
+                }
+            );
+
+
+    /* =============================================
+       RARITY RULES
+    ============================================= */
+
+    const rarityOrder = {
+
+        "Common": 1,
+
+        "Rare": 2,
+
+        "Ultra Rare": 3,
+
+        "Legendary": 4
+
+    };
+
+
+    function getHeadCountRarity(
+        essa
+    ) {
+
+        const isCustom =
+            essa.custom === true;
+
+
+        const isHoliday =
+    essa.limitedEdition === true ||
+    (
+        typeof essa.originalPetId ===
+        "string" &&
+        (
+            essa.originalPetId ===
+                "voidy-halloween-2026" ||
+            essa.originalPetId ===
+                "voidy-thanksgiving-2026" ||
+            essa.originalPetId ===
+                "voidy-santa-2026"
+        )
+    );
+
+if (
+    isCustom ||
+    isHoliday
+) {
+
+    return "Legendary";
+}
+
+
+        const level =
+            Number(
+                essa.unlockLevel
+            ) || 1;
+
+
+        if (
+            level >= 80
+        ) {
+
+            return "Ultra Rare";
+        }
+
+
+        if (
+            level >= 40
+        ) {
+
+            return "Rare";
+        }
+
+
+        return "Common";
+    }
+
+
+    /* =============================================
+       SORT COMMON → LEGENDARY
+    ============================================= */
+
+    collectionEssas.sort(
+        function(a, b) {
+
+            const rarityA =
+                getHeadCountRarity(
+                    a
+                );
+
+
+            const rarityB =
+                getHeadCountRarity(
+                    b
+                );
+
+
+            const rarityDifference =
+                rarityOrder[
+                    rarityA
+                ] -
+                rarityOrder[
+                    rarityB
+                ];
+
+
+            if (
+                rarityDifference !== 0
+            ) {
+
+                return rarityDifference;
+            }
+
+
+            return String(
+                a.name || ""
+            ).localeCompare(
+                String(
+                    b.name || ""
+                )
+            );
+        }
+    );
+
+
+    /* =============================================
+       BUILD TABLE ROWS
+    ============================================= */
+
+    const rows =
+        collectionEssas
+            .map(
+                function(essa) {
+
+                    const stats =
+                        getPlayEssaStats(
+                            playData,
+                            essa.id
+                        );
+
+
+                    const isCustom =
+                        essa.custom === true;
+
+
+                    const type =
+                        isCustom
+                            ? "Custom"
+                            : "Permanent";
+
+
+                    const isInKennel =
+                        houseData
+                            .essaRooms[
+                                essa.id
+                            ] ===
+                        "kennel";
+
+
+                    const location =
+                        isInKennel
+                            ? "Kennel"
+                            : "House";
+
+
+                    const reason =
+                        isInKennel
+                            ? (
+                                stats.kennelReason ===
+                                "voidy"
+                                    ? "Placed by Voidy"
+                                    : "Stored by User"
+                            )
+                            : "—";
+
+
+                    const rarity =
+                        getHeadCountRarity(
+                            essa
+                        );
+
+
+                    return `
+
+                        <div
+                            style="
+                                display:grid;
+
+                                grid-template-columns:
+                                    65px
+                                    minmax(90px, 1.1fr)
+                                    minmax(80px, .9fr)
+                                    minmax(80px, .9fr)
+                                    minmax(120px, 1.3fr)
+                                    minmax(85px, .9fr);
+
+                                align-items:center;
+
+                                gap:8px;
+
+                                padding:
+                                    9px 12px;
+
+                                border-bottom:
+                                    1px solid #dbe5e7;
+                            "
+                        >
+
+                            <div>
+
+                                <img
+                                    src="${essa.image}"
+
+                                    alt="${escapeHTML(
+                                        essa.name
+                                    )}"
+
+                                    draggable="false"
+
+                                    style="
+                                        display:block;
+
+                                        width:48px;
+                                        height:48px;
+
+                                        margin:auto;
+
+                                        object-fit:contain;
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div
+                                style="
+                                    font-weight:900;
+                                "
+                            >
+
+                                ${escapeHTML(
+                                    essa.name
+                                )}
+
+                            </div>
+
+
+                            <div>
+
+                                ${type}
+
+                            </div>
+
+
+                            <div
+                                style="
+                                    font-weight:900;
+                                "
+                            >
+
+                                ${location}
+
+                            </div>
+
+
+                            <div>
+
+                                ${reason}
+
+                            </div>
+
+
+                            <div
+                                style="
+                                    font-weight:900;
+                                "
+                            >
+
+                                ${rarity}
+
+                            </div>
+
+                        </div>
+
+                    `;
+                }
+            )
+            .join("");
+
+
+    /* =============================================
+       CREATE POPUP
+    ============================================= */
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+
+    overlay.id =
+        "voidy-kennel-head-count-popup";
+
+
+    overlay.style.cssText = `
+        position:absolute;
+
+        inset:0;
+
+        display:flex;
+
+        align-items:center;
+
+        justify-content:center;
+
+        padding:20px;
+
+        box-sizing:border-box;
+
+        background:
+            rgba(
+                0,
+                0,
+                0,
+                .65
+            );
+
+        z-index:1000001;
+    `;
+
+
+    /* =============================================
+       POPUP CONTENT
+    ============================================= */
+
+    overlay.innerHTML = `
+
+        <div
+            style="
+                width:min(
+                    980px,
+                    94vw
+                );
+
+                max-height:82vh;
+
+                display:flex;
+
+                flex-direction:column;
+
+                overflow:hidden;
+
+                border:
+                    3px solid
+                    var(
+                        --user-theme-color,
+                        #4fb5ae
+                    );
+
+                border-radius:22px;
+
+                background:white;
+
+                color:#17313a;
+
+                box-shadow:
+                    0 15px 50px
+                    rgba(
+                        0,
+                        0,
+                        0,
+                        .35
+                    );
+            "
+        >
+
+
+            <!-- HEADER -->
+
+            <div
+                style="
+                    position:relative;
+
+                    padding:
+                        16px
+                        55px
+                        12px;
+
+                    text-align:center;
+
+                    border-bottom:
+                        2px solid
+                        #dbe5e7;
+                "
+            >
+
+                <div
+                    style="
+                        font-size:20px;
+
+                        font-weight:900;
+                    "
+                >
+
+                    📋 Voidy has taken a Head-Count...
+
+                </div>
+
+
+                <div
+                    style="
+                        margin-top:4px;
+
+                        font-size:13px;
+
+                        color:#68777b;
+                    "
+                >
+
+                    Here is your current collection.
+
+                </div>
+
+
+                <button
+                    type="button"
+
+                    onclick="
+                        document
+                            .getElementById(
+                                'voidy-kennel-head-count-popup'
+                            )
+                            ?.remove()
+                    "
+
+                    style="
+                        position:absolute;
+
+                        top:10px;
+
+                        right:12px;
+
+                        width:36px;
+
+                        height:36px;
+
+                        padding:0;
+
+                        border:none;
+
+                        border-radius:50%;
+
+                        background:#e8eef0;
+
+                        color:#17313a;
+
+                        font-size:20px;
+
+                        font-weight:900;
+
+                        cursor:pointer;
+                    "
+                >
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div
+                style="
+                    overflow:auto;
+                "
+            >
+
+
+                <!-- COLUMN HEADERS -->
+
+                <div
+                    style="
+                        display:grid;
+
+                        grid-template-columns:
+                            65px
+                            minmax(90px, 1.1fr)
+                            minmax(80px, .9fr)
+                            minmax(80px, .9fr)
+                            minmax(120px, 1.3fr)
+                            minmax(85px, .9fr);
+
+                        gap:8px;
+
+                        padding:
+                            10px
+                            12px;
+
+                        background:#eef5f5;
+
+                        font-size:10px;
+
+                        font-weight:900;
+
+                        text-transform:uppercase;
+                    "
+                >
+
+                    <div>
+                        ESSA
+                    </div>
+
+
+                    <div>
+                        Name
+                    </div>
+
+
+                    <div>
+                        Type
+                    </div>
+
+
+                    <div>
+                        Location
+                    </div>
+
+
+                    <div>
+                        Reason In-Kennel
+                    </div>
+
+
+                    <div>
+                        Rarity
+                    </div>
+
+                </div>
+
+
+                ${
+                    rows ||
+                    `
+
+                        <div
+                            style="
+                                padding:
+                                    35px
+                                    20px;
+
+                                text-align:center;
+
+                                color:#68777b;
+                            "
+                        >
+
+                            No ESSAs are currently
+                            in your collection.
+
+                        </div>
+
+                    `
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    /* =============================================
+       FULLSCREEN-SAFE POPUP HOST
+    ============================================= */
+
+    const popupHost =
+        document.fullscreenElement ||
+        document.body;
+
+
+    popupHost.appendChild(
         overlay
     );
 }
@@ -21222,22 +23230,39 @@ function openPlayFridgeEssaChooser(
 ) {
 
     const playData =
-        getSavedPlayData();
+    getSavedPlayData();
 
 
-    const availableEssas =
+const houseData =
+    getSavedPlayHouseData();
+
+
+const availableEssas =
     getAllPlayableEssas().filter(
-            function(essa) {
+        function(essa) {
 
-                return (
-                    playData
-                        .unlockedEssaIds
-                        .includes(
-                            essa.id
-                        )
-                );
-            }
-        );
+            const isUnlocked =
+                playData
+                    .unlockedEssaIds
+                    .includes(
+                        essa.id
+                    );
+
+
+            const isInKennel =
+                houseData
+                    .essaRooms[
+                        essa.id
+                    ] ===
+                "kennel";
+
+
+            return (
+                isUnlocked &&
+                !isInKennel
+            );
+        }
+    );
 
 
     const existing =
@@ -23918,9 +25943,13 @@ function showPartyPawsEnergyWarning(
     `;
 
 
-    document.body.appendChild(
-        overlay
-    );
+    const popupHost =
+    document.fullscreenElement ||
+    document.body;
+
+popupHost.appendChild(
+    overlay
+);
 
 
     document
@@ -24040,7 +26069,9 @@ function startPlayFridgeItemDrag(
     }
 
 
-     function stopDragging(event) {
+    function stopDragging(
+        event
+    ) {
 
         const essaTarget =
             document.querySelector(
@@ -24123,60 +26154,73 @@ function startPlayFridgeItemDrag(
                         );
                 }
 
-              if (
-    pendingItem.itemName ===
-    "Party Paws Energy"
-) {
 
-    showPartyPawsEnergyWarning(
+                if (
+                    pendingItem.itemName ===
+                    "Party Paws Energy"
+                ) {
 
-        function() {
+                    showPartyPawsEnergyWarning(
 
-            stats.superEnergyUntil =
-    Date.now() +
-    (
-        10 *
-        1000
-    );
+                        function() {
 
-            savePlayData(
-                playData
-            );
+                            stats.superEnergyUntil =
+                                Date.now() +
+                                (
+                                    10 *
+                                    1000
+                                );
 
-            playFridgeFeedingBasket
-                .splice(
-                    basketIndex,
-                    1
+
+                            savePlayData(
+                                playData
+                            );
+
+
+                            playFridgeFeedingBasket
+                                .splice(
+                                    basketIndex,
+                                    1
+                                );
+
+
+                            renderPlayableEssaFocus(
+                                pendingItem.essaId
+                            );
+                        },
+
+                        function() {
+
+                            savePlayData(
+                                playData
+                            );
+
+
+                            playFridgeFeedingBasket
+                                .splice(
+                                    basketIndex,
+                                    1
+                                );
+
+
+                            renderPlayableEssaFocus(
+                                pendingItem.essaId
+                            );
+                        }
+
+                    );
+
+
+                    wasEaten = true;
+
+                    return;
+                }
+
+
+                savePlayData(
+                    playData
                 );
 
-            renderPlayableEssaFocus(
-                pendingItem.essaId
-            );
-        },
-
-        function() {
-
-            savePlayData(
-                playData
-            );
-
-            playFridgeFeedingBasket
-                .splice(
-                    basketIndex,
-                    1
-                );
-
-            renderPlayableEssaFocus(
-                pendingItem.essaId
-            );
-        }
-
-    );
-
-    wasEaten = true;
-
-    return;
-}
 
                 playFridgeFeedingBasket
                     .splice(
@@ -26035,57 +28079,49 @@ function petBackyardFrisbeeEssa(
         getSavedPlayData();
 
 
-    const oldXP =
-        Number(
-            playData.trainerXP
-        ) || 0;
-
-
     const oldLevel =
-        Math.floor(
-            oldXP /
-            100
-        ) +
-        1;
+        Number(
+            playData.trainerLevel
+        ) || 1;
 
 
     const xpEarned =
         2;
 
 
-    playData.trainerXP =
-    oldXP +
-    xpEarned;
-
-
-/*
-    FRISBEE REWARD
-
-    Each completed retrieval adds
-    100 coins to the Playroom.
-*/
-playData.pendingCoins =
-    (
-        Number(
-            playData.pendingCoins
-        ) || 0
-    ) +
-    getPlayGameCoinReward(
-    100
-)
-
-
-savePlayData(
-    playData
-);
+    addTrainerXP(
+        playData,
+        xpEarned
+    );
 
 
     const newLevel =
-        Math.floor(
-            playData.trainerXP /
-            100
+        Number(
+            playData.trainerLevel
+        ) || 1;
+
+
+    /*
+        FRISBEE REWARD
+
+        Each completed retrieval adds
+        100 coins to the Playroom.
+    */
+
+    playData.pendingCoins =
+        (
+            Number(
+                playData.pendingCoins
+            ) || 0
         ) +
-        1;
+        getPlayGameCoinReward(
+            100
+        );
+
+
+    savePlayData(
+        playData
+    );
 
 
     state.retrievals++;
@@ -26248,7 +28284,6 @@ savePlayData(
         timer
     );
 }
-
 
 /* =========================================================
    CLOSE FRISBEE
@@ -27394,12 +29429,10 @@ function awardESSAMemoryXP() {
         20;
 
 
-    playData.trainerXP =
-        Number(
-            playData.trainerXP ||
-            0
-        ) +
-        xpReward;
+    addTrainerXP(
+    playData,
+    xpReward
+);
 
 
     savePlayData(
@@ -28532,15 +30565,10 @@ function awardESSATilesXP(won) {
         ) || 0;
 
 
-    playData.trainerXP +=
-        xpAmount;
-
-
-    playData.trainerLevel =
-        Math.floor(
-            playData.trainerXP /
-            100
-        ) + 1;
+    addTrainerXP(
+    playData,
+    xpAmount
+);
 
 
     if (
@@ -29872,35 +31900,22 @@ function awardESSATicTacToeXP(
     }
 
 
-    playData.trainerXP =
-        Number(
-            playData.trainerXP
-        ) || 0;
-
-
-    playData.trainerLevel =
+    const oldLevel =
         Number(
             playData.trainerLevel
         ) || 1;
 
 
-    const oldLevel =
-        playData.trainerLevel;
-
-
-    playData.trainerXP +=
-        xpAmount;
+    addTrainerXP(
+        playData,
+        xpAmount
+    );
 
 
     const newLevel =
-        Math.floor(
-            playData.trainerXP /
-            100
-        ) + 1;
-
-
-    playData.trainerLevel =
-        newLevel;
+        Number(
+            playData.trainerLevel
+        ) || 1;
 
 
     /*
@@ -31636,19 +33651,10 @@ function awardFindMyEssaXP() {
     const xpAmount =
         25;
 
-    playData.trainerXP =
-        Number(
-            playData.trainerXP
-        ) || 0;
-
-    playData.trainerXP +=
-        xpAmount;
-
-    playData.trainerLevel =
-        Math.floor(
-            playData.trainerXP /
-            100
-        ) + 1;
+    addTrainerXP(
+    playData,
+    xpAmount
+);
 
     savePlayData(
         playData
@@ -33911,7 +35917,11 @@ overlay.innerHTML = `
 
     `;
 
-    document.body.appendChild(
+    const popupHost =
+    document.fullscreenElement ||
+    document.body;
+
+popupHost.appendChild(
     overlay
 );
 
@@ -35306,20 +37316,6 @@ onclick="
                         "
                     >
                         📣 Call ESSA
-                    </button>
-
-
-                    <button
-                        class="
-                            play-action-button
-                            primary
-                        "
-
-                        onclick="
-                            showPlayHouseStatus()
-                        "
-                    >
-                        💚 Needs
                     </button>
 
 
