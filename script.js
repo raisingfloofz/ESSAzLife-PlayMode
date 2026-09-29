@@ -12356,6 +12356,9 @@ let playHouseWanderTimer =
 let playHouseRoomMoveTimer =
     null;
 
+let partyPawsEnergyTimer =
+    null;
+
 
 /* =========================================================
    START HOUSE TIMERS
@@ -12364,6 +12367,23 @@ let playHouseRoomMoveTimer =
 function startPlayHouseTimers() {
 
     stopPlayHouseTimers();
+
+    partyPawsEnergyTimer =
+    setInterval(
+        function() {
+
+            if (
+                document.getElementById(
+                    "play-house-room"
+                )
+            ) {
+
+                runPartyPawsSuperEnergy();
+            }
+
+        },
+        80
+    );
 
 
     playHouseNeedTimer =
@@ -12402,7 +12422,7 @@ function startPlayHouseTimers() {
                 }
 
             },
-            800
+            5000
         );
 
 
@@ -12430,6 +12450,18 @@ function startPlayHouseTimers() {
 ========================================================= */
 
 function stopPlayHouseTimers() {
+
+    if (
+    partyPawsEnergyTimer
+) {
+
+    clearInterval(
+        partyPawsEnergyTimer
+    );
+
+    partyPawsEnergyTimer =
+        null;
+}
 
     if (
         playHouseNeedTimer
@@ -13241,6 +13273,78 @@ if (
             houseData
         );
     }
+}
+
+/* =========================================================
+   PARTY PAWS SUPER ENERGY
+========================================================= */
+
+function runPartyPawsSuperEnergy() {
+
+    const playData =
+        getSavedPlayData();
+
+    document
+        .querySelectorAll(
+            "[data-play-house-essa]"
+        )
+        .forEach(
+            function(wrapper) {
+
+                const essaId =
+                    wrapper
+                        .dataset
+                        .playHouseEssa;
+
+                const stats =
+                    getPlayEssaStats(
+                        playData,
+                        essaId
+                    );
+
+                const hasSuperEnergy =
+                    Number(
+                        stats.superEnergyUntil
+                    ) > Date.now();
+
+
+                if (!hasSuperEnergy) {
+
+                    wrapper.style.filter =
+                        "";
+
+                    return;
+                }
+
+
+                /* SUPER FAST MOVEMENT */
+
+                wrapper.style.transition =
+                    "left 0.07s linear, bottom 0.07s linear";
+
+                wrapper.style.left =
+                    (
+                        5 +
+                        Math.random() *
+                        90
+                    ) +
+                    "%";
+
+                wrapper.style.bottom =
+                    (
+                        3 +
+                        Math.random() *
+                        75
+                    ) +
+                    "%";
+
+
+                /* BLUR FROM EXTREME SPEED */
+
+                wrapper.style.filter =
+                    "blur(2px)";
+            }
+        );
 }
 
 /* =========================================================
