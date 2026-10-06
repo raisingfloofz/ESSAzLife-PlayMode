@@ -1581,164 +1581,79 @@ function setupHeaderButtons() {
 
 
     /*
-        HANDLER EDITION
-    */
-    if (
-        buttonList.length >=
-        3
-    ) {
+    SWITCH ESSAZLIFE APP
+*/
 
-        buttonList[2].onclick =
-            function() {
+const switchButton =
+    document.getElementById(
+        "switch-button"
+    );
 
-                showHandlerEditionPopup();
-            };
-    }
+const switchOverlay =
+    document.getElementById(
+        "switch-overlay"
+    );
+
+const closeSwitchButton =
+    document.getElementById(
+        "close-switch-button"
+    );
+
+const switchHandlerButton =
+    document.getElementById(
+        "switch-handler-button"
+    );
+
+const switchChorezButton =
+    document.getElementById(
+        "switch-chorez-button"
+    );
 
 
-    function showHandlerEditionPopup() {
+if (switchButton) {
 
-        const overlay =
-            document.createElement(
-                "div"
+    switchButton.onclick =
+        function() {
+
+            switchOverlay.classList.remove(
+                "hidden"
             );
+        };
+}
 
 
-        overlay.id =
-            "handler-edition-popup";
+if (closeSwitchButton) {
+
+    closeSwitchButton.onclick =
+        function() {
+
+            switchOverlay.classList.add(
+                "hidden"
+            );
+        };
+}
 
 
-        overlay.style.cssText = `
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,0.35);
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            z-index:99999;
-            padding:20px;
-            box-sizing:border-box;
-        `;
+if (switchHandlerButton) {
+
+    switchHandlerButton.onclick =
+        function() {
+
+            window.location.href =
+                "https://raisingfloofz.github.io/ESSAzLife-Handler-Edition/";
+        };
+}
 
 
-        overlay.innerHTML = `
+if (switchChorezButton) {
 
-            <div
-                style="
-                    width:min(470px, 100%);
-                    background:white;
-                    border:2px solid var(--user-theme-color, #4fb5ae);
-                    border-radius:22px;
-                    padding:32px;
-                    box-sizing:border-box;
-                    text-align:center;
-                    box-shadow:0 15px 45px rgba(0,0,0,0.18);
-                "
-            >
+    switchChorezButton.onclick =
+        function() {
 
-                <h2
-                    style="
-                        margin:0 0 18px 0;
-                        color:var(--user-theme-color, #4fb5ae);
-                        font-size:28px;
-                    "
-                >
-                    🐮 Open Handler Edition?
-                </h2>
-
-
-                <p
-                    style="
-                        color:#58686e;
-                        font-size:17px;
-                        line-height:1.5;
-                        margin:0 0 12px 0;
-                    "
-                >
-                    Handler Edition is the companion app for those
-                    who want to track and manage their real-life ESSAs.
-                </p>
-
-
-                <p
-                    style="
-                        color:#58686e;
-                        font-size:17px;
-                        line-height:1.5;
-                        margin:0 0 25px 0;
-                    "
-                >
-                    You can create ESSA profiles, log care,
-                    track training, keep a diary, and more.
-                    You are about to leave Play Mode.
-                </p>
-
-
-                <div
-                    style="
-                        display:flex;
-                        justify-content:center;
-                        gap:14px;
-                        flex-wrap:wrap;
-                    "
-                >
-
-                    <button
-                        onclick="
-                            document
-                                .getElementById(
-                                    'handler-edition-popup'
-                                )
-                                .remove()
-                        "
-
-                        style="
-                            padding:12px 22px;
-                            border:1px solid #d3dde0;
-                            border-radius:14px;
-                            background:white;
-                            color:#344349;
-                            font-size:16px;
-                            font-weight:bold;
-                            cursor:pointer;
-                        "
-                    >
-                        Cancel
-                    </button>
-
-
-                    <button
-                        onclick="
-                            window.location.href =
-                            'https://raisingfloofz.github.io/ESSAzLife-Handler-Edition/'
-                        "
-
-                        style="
-                            padding:12px 22px;
-                            border:none;
-                            border-radius:14px;
-                            background:var(--user-theme-color, #4fb5ae);
-                            color:white;
-                            font-size:16px;
-                            font-weight:bold;
-                            cursor:pointer;
-                        "
-                    >
-                        Open Handler Edition
-                    </button>
-
-                </div>
-
-            </div>
-
-        `;
-
-
-        document.body.appendChild(
-            overlay
-        );
-    }
-
+            window.location.href =
+                "https://raisingfloofz.github.io/ESSAzLife-Chorez/";
+        };
+}
 
     /*
         PROFILE

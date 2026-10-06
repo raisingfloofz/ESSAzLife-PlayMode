@@ -4,6 +4,18 @@
     <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <title>ESSAzLife-PlayMode</title>
+    <!-- Browser Tab Icon -->
+<link
+    rel="icon"
+    type="image/png"
+    href="./MooCow.Icon.2.png?v=2"
+>
+
+<!-- Apple Home Screen Icon -->
+<link
+    rel="apple-touch-icon"
+    href="./MooCow.Icon.2.png"
+>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -14,14 +26,54 @@
             ESSAzLife Play Mode
         </div>
 
-        <div class="header-buttons">
-            <button>🏠</button>
-            <button>?</button>
-            <button>Handler</button>
-            <button>Profile</button>
-            <button>Log Out</button>
-        </div>
+       <div class="header-buttons">
+    <button>🏠</button>
+    <button>?</button>
+    <button id="switch-button">🔄 Switch</button>
+    <button>Profile</button>
+    <button>Log Out</button>
+</div>
     </header>
+
+    <!-- =========================================
+     SWITCH ESSAZLIFE APP POPUP
+========================================= -->
+
+<div
+    id="switch-overlay"
+    class="switch-overlay hidden"
+>
+    <div class="switch-popup">
+
+        <h2>Switch ESSAzLife App</h2>
+
+        <p>
+            Where would you like to go?
+        </p>
+
+        <button
+            id="switch-handler-button"
+            type="button"
+        >
+            📝 ESSAzLife Handler Edition
+        </button>
+
+        <button
+            id="switch-chorez-button"
+            type="button"
+        >
+            🐄 ESSAzLife Chorez
+        </button>
+
+        <button
+            id="close-switch-button"
+            type="button"
+        >
+            CANCEL
+        </button>
+
+    </div>
+</div>
 
     <main>
         <h1>Welcome Back!</h1>

@@ -2232,3 +2232,83 @@ height: 260px !important;
         display: none !important;
     }
 }
+
+/* =========================================
+   SWITCH ESSAZLIFE APP POPUP
+========================================= */
+
+.switch-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 99999;
+}
+
+.switch-overlay.hidden {
+    display: none;
+}
+
+.switch-popup {
+    width: min(90%, 420px);
+    background: white;
+    border: 2px solid var(
+        --user-theme-color,
+        #4fb5ae
+    );
+    border-radius: 20px;
+    padding: 24px;
+    box-sizing: border-box;
+    text-align: center;
+    box-shadow:
+        0 12px 35px
+        rgba(0, 0, 0, 0.25);
+}
+
+.switch-popup h2 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: var(
+        --user-theme-color,
+        #4fb5ae
+    );
+}
+
+.switch-popup p {
+    margin-bottom: 20px;
+    color: #58686e;
+}
+
+.switch-popup button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 12px;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#switch-handler-button,
+#switch-chorez-button {
+    background: var(
+        --user-theme-color,
+        #4fb5ae
+    );
+    color: white;
+}
+
+#close-switch-button {
+    background: #e8e8e8;
+    color: #222;
+}
+
+.switch-popup button:active {
+    transform: scale(0.98);
+}
