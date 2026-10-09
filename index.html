@@ -22,12 +22,12 @@
             ESSAzLife Play Mode
         </div>
 
-       <div class="header-buttons">
-    <button>🏠</button>
-    <button>?</button>
-    <button id="switch-button">🔄 Switch</button>
-    <button>Profile</button>
-    <button>Log Out</button>
+   <div class="header-buttons">
+    <button title="Home" aria-label="Home">🏠</button>
+    <button title="Help" aria-label="Help">❓</button>
+    <button id="switch-button" title="Switch Apps" aria-label="Switch Apps">🔄</button>
+    <button title="Profile" aria-label="Profile">👤</button>
+    <button id="updates-button" title="Updates" aria-label="Updates">📢</button>
 </div>
     </header>
 
@@ -68,6 +68,32 @@
             CANCEL
         </button>
 
+    </div>
+</div>
+
+   <div id="updates-overlay" class="play-updates-overlay hidden">
+    <div class="play-updates-popup">
+        <div class="play-updates-header">
+            <h2>📢 PlayMode Updates</h2>
+            <button id="close-updates" type="button" aria-label="Close Updates">✕</button>
+        </div>
+
+        <p>News and announcements from ESSAzLife PlayMode!</p>
+
+        <div class="play-update-post">
+            <strong>October 9, 2026</strong>
+            <h3>Welcome to PlayMode Updates!</h3>
+            <p>
+                This is where you'll find information about
+                new features, improvements, and announcements.
+                The app went live on Thursday, October 1, 2026 at 4pm
+                After being tested by my testers thoroughly. 
+                Today, October 9, 2026, I have removed the switch tab and
+                changed the navigation tabs to emojis, and removed the email entry requirement
+                for PlayMode users, as well as adding the updates tab. 
+                The next update is scheduled for: Sunday, November 1st, 2026.
+            </p>
+        </div>
     </div>
 </div>
 

@@ -2,7 +2,7 @@
    ESSAzLife
    FULL SCRIPT.JS
 ========================================================= */
-
+Backup created October 9, 2026 @ 10:15am
 
 /* =========================================================
    GLOBAL STORAGE
@@ -3441,11 +3441,29 @@ function showCreateAccountForm() {
                     line-height:1.5;
                 "
             >
-                Create a username and password
+                Create an email, username, and password
                 for your local ESSAzLife account.
-                (As of October 9, 2026, ESSAzLife PlayMode 
-                no longer requires the entry of an email)
             </p>
+
+
+            <label>
+                Email
+            </label>
+
+            <input
+                id="create-email"
+                type="email"
+                autocomplete="email"
+
+                style="
+                    width:100%;
+                    box-sizing:border-box;
+                    padding:12px;
+                    margin:7px 0 18px 0;
+                    border:1px solid #ccd7da;
+                    border-radius:10px;
+                "
+            >
 
 
             <label>
@@ -3656,6 +3674,16 @@ function showCreateAccountForm() {
 
 async function createAccount() {
 
+    const email =
+        document
+            .getElementById(
+                "create-email"
+            )
+            ?.value
+            .trim()
+            .toLowerCase();
+
+
     const username =
         document
             .getElementById(
@@ -3716,6 +3744,7 @@ async function createAccount() {
 
 
     if (
+        !email ||
         !username ||
         !password ||
         !confirmPassword ||
@@ -3731,6 +3760,21 @@ async function createAccount() {
 
         return;
     }
+
+
+    if (
+        !email.includes(
+            "@"
+        )
+    ) {
+
+        alert(
+            "Please enter a valid email address."
+        );
+
+        return;
+    }
+
 
     if (
         username.length <
@@ -3775,6 +3819,31 @@ async function createAccount() {
         getAccounts();
 
 
+    const emailExists =
+        accounts.some(
+            function(account) {
+
+                return (
+                    String(
+                        account.email
+                    )
+                        .toLowerCase() ===
+                    email
+                );
+            }
+        );
+
+
+    if (emailExists) {
+
+        alert(
+            "An account already uses that email."
+        );
+
+        return;
+    }
+
+
     const usernameExists =
         accounts.some(
             function(account) {
@@ -3814,6 +3883,9 @@ async function createAccount() {
                 makeId(
                     "user"
                 ),
+
+            email:
+                email,
 
             username:
                 username,
@@ -3877,6 +3949,9 @@ async function createAccount() {
 
 
         pendingWelcomeCredentials = {
+
+            email:
+                email,
 
             username:
                 username,
@@ -4032,6 +4107,15 @@ function renderOneTimeWelcome() {
 
 
                 <p>
+                    <strong>Email:</strong><br>
+
+                    ${escapeHTML(
+                        credentials.email
+                    )}
+                </p>
+
+
+                <p>
                     <strong>Username:</strong><br>
 
                     ${escapeHTML(
@@ -4103,7 +4187,7 @@ function renderOneTimeWelcome() {
 
             <p>
                 If you forget your password, you will need
-                your saved username and account recovery answers
+                your saved email and account recovery answers
                 before you can create a new password.
             </p>
 
@@ -4240,7 +4324,7 @@ function showLoginForm() {
 
 
             <label>
-                Username
+                Email or Username
             </label>
 
             <input
@@ -4350,37 +4434,49 @@ async function loginUser() {
     ) {
 
         alert(
-            "Please enter your username and password."
+            "Please enter your email or username and password."
         );
 
         return;
     }
 
 
-  const account =
-    getAccounts().find(
-        function(item) {
+    const account =
+        getAccounts().find(
+            function(item) {
 
-            const username =
-                String(
-                    item.username || ""
-                )
-                    .trim()
-                    .toLowerCase();
-
-            return username === identity;
-        }
-    );
+                const email =
+                    String(
+                        item.email ||
+                        ""
+                    )
+                        .toLowerCase();
 
 
-if (!account) {
+                const username =
+                    String(
+                        item.username ||
+                        ""
+                    )
+                        .toLowerCase();
 
-    alert(
-        "No ESSAzLife account was found with that username."
-    );
 
-    return;
-}
+                return (
+                    email === identity ||
+                    username === identity
+                );
+            }
+        );
+
+
+    if (!account) {
+
+        alert(
+            "No ESSAzLife account was found with that email or username."
+        );
+
+        return;
+    }
 
 
     try {
@@ -4484,18 +4580,18 @@ function showForgotPasswordForm() {
                     line-height:1.5;
                 "
             >
-                Enter the username saved to your ESSAzLife account.
+                Enter the email saved to your ESSAzLife account.
             </p>
 
 
             <label>
-                Username
+                Email
             </label>
 
             <input
-               id="forgot-username"
-type="text"
-autocomplete="username"
+                id="forgot-email"
+                type="email"
+                autocomplete="email"
 
                 style="
                     width:100%;
@@ -4536,7 +4632,8 @@ autocomplete="username"
                     line-height:1.5;
                 "
             >
-                Password recovery happens on this device using your saved recovery answers.
+                This local prototype cannot send a real email yet.
+                For now, password resetting happens on this device.
             </p>
 
         </div>
@@ -4547,27 +4644,51 @@ autocomplete="username"
 
 function findPasswordResetAccount() {
 
-    const username = document
-        .getElementById("forgot-username")
-        ?.value
-        .trim()
-        .toLowerCase();
+    const email =
+        document
+            .getElementById(
+                "forgot-email"
+            )
+            ?.value
+            .trim()
+            .toLowerCase();
 
-    if (!username) {
-        alert("Please enter your username.");
+
+    if (!email) {
+
+        alert(
+            "Please enter your email."
+        );
+
         return;
     }
 
-    const account = getAccounts().find(function(item) {
-        return String(item.username || "")
-            .trim()
-            .toLowerCase() === username;
-    });
+
+    const account =
+        getAccounts().find(
+            function(item) {
+
+                return (
+                    String(
+                        item.email ||
+                        ""
+                    )
+                        .toLowerCase() ===
+                    email
+                );
+            }
+        );
+
 
     if (!account) {
-        alert("No ESSAzLife PlayMode account was found with that username.");
+
+        alert(
+            "No ESSAzLife PlayMode account was found with that email."
+        );
+
         return;
     }
+
 
     if (
         !account.recoveryBirthMonth ||
@@ -4575,11 +4696,18 @@ function findPasswordResetAccount() {
         !account.recoveryMiddleName ||
         !account.recoveryLastName
     ) {
-        alert("This account does not have account recovery answers set up yet.");
+
+        alert(
+            "This account does not have account recovery answers set up yet."
+        );
+
         return;
     }
 
-    showPasswordRecoveryQuestions(account.id);
+
+    showPasswordRecoveryQuestions(
+        account.id
+    );
 }
 
 /* =========================================================
@@ -4718,21 +4846,23 @@ function showPasswordRecoveryQuestions(
             </p>
 
 
-           <p
-    style="
-        padding:12px;
-        background:#eef9f7;
-        border-radius:12px;
-    "
->
-    <strong>
-        Account:
-    </strong>
+            <p
+                style="
+                    padding:12px;
+                    background:#eef9f7;
+                    border-radius:12px;
+                "
+            >
+                <strong>
+                    Account:
+                </strong>
 
-    ${escapeHTML(
-        account.username
-    )}
-</p>
+                ${escapeHTML(
+                    account.email
+                )}
+            </p>
+
+
             <label>
                 What is your birthday?
             </label>
@@ -5049,18 +5179,19 @@ function showLocalPasswordReset(
             </h1>
 
 
-          <p
-    style="
-        color:#68777b;
-    "
->
-    Account:
-    <strong>
-        ${escapeHTML(
-            account.username
-        )}
-    </strong>
-</p>
+            <p
+                style="
+                    color:#68777b;
+                "
+            >
+                Account:
+                <strong>
+                    ${escapeHTML(
+                        account.email
+                    )}
+                </strong>
+            </p>
+
 
             <label>
                 New Password
@@ -5423,6 +5554,23 @@ function renderProfile() {
 
                 value="${escapeHTML(
                     user.username ||
+                    ""
+                )}"
+            >
+
+
+            <label>
+                Email
+            </label>
+
+
+            <input
+                id="profile-email"
+
+                type="email"
+
+                value="${escapeHTML(
+                    user.email ||
                     ""
                 )}"
             >
@@ -6480,6 +6628,15 @@ function saveProfile() {
             .trim();
 
 
+    const email =
+        document
+            .getElementById(
+                "profile-email"
+            )
+            .value
+            .trim()
+            .toLowerCase();
+
 
     if (
         username.length <
@@ -6488,6 +6645,21 @@ function saveProfile() {
 
         alert(
             "Username must be at least 3 characters."
+        );
+
+        return;
+    }
+
+
+    if (
+        !email ||
+        !email.includes(
+            "@"
+        )
+    ) {
+
+        alert(
+            "Please enter a valid email."
         );
 
         return;
@@ -6515,12 +6687,26 @@ function saveProfile() {
                 }
 
 
-               return (
-    String(
-        account.username || ""
-    ).toLowerCase() ===
-    username.toLowerCase()
-);
+                return (
+
+                    String(
+                        account.username ||
+                        ""
+                    )
+                        .toLowerCase() ===
+                    username
+                        .toLowerCase()
+
+                    ||
+
+                    String(
+                        account.email ||
+                        ""
+                    )
+                        .toLowerCase() ===
+                    email
+
+                );
 
             }
         );
@@ -6529,7 +6715,7 @@ function saveProfile() {
     if (duplicate) {
 
         alert(
-           "That username is already being used by another account."
+            "That username or email is already being used by another account."
         );
 
         return;
@@ -6567,6 +6753,11 @@ function saveProfile() {
     ].username =
         username;
 
+
+    accounts[
+        index
+    ].email =
+        email;
 
 
     accounts[
