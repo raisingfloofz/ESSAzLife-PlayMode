@@ -18363,9 +18363,11 @@ function openVoidyStorePage(
                             "
                         >
 
-                            ${
-                                makeVoidyHolidayPetShelfItems()
-                            }
+                          ${
+    pageName === "pets"
+        ? makeVoidyHolidayPetShelfItems()
+        : ""
+}
 
                         </div>
 
