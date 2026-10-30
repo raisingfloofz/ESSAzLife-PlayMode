@@ -13,9 +13,51 @@
     href="./MooCow.Icon.2.png"
 >
     <link rel="stylesheet" href="style.css">
+
+    
+<style>
+  /* ESSAzLife World announcement banner */
+  #world-announcement-banner {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    background: linear-gradient(90deg, #0879d9, #36a5ff);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  #world-announcement-banner span {
+    margin-left: 8px;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+
+  #world-announcement-banner:hover {
+    background: linear-gradient(90deg, #0869bb, #218de0);
+  }
+
+  #world-announcement-banner:focus-visible {
+    outline: 3px solid #ffdc54;
+    outline-offset: -3px;
+  }
+</style>
+
 </head>
 
 <body>
+
+    
+<!-- ESSAzLife World announcement banner -->
+<div id="world-announcement-banner" role="button" tabindex="0">
+  🌎 CREATE A BACKUP FILE AND RESTORE THROUGH ESSAZLIFE WORLD FOR THE NEWEST RELEASES, OR STAY HERE.
+  <span>ⓘ Why Switch?</span>
+</div>
+
       <header>
         <div class="app-name">
             <img class="app-icon" src="MooCow.Icon.2.png" alt="ESSAzLife PlayMode cow icon">
@@ -161,5 +203,165 @@
         });
     }
 </script>
+
+
+<!-- ESSAzLife World: Why Switch? popup -->
+<div id="world-switch-overlay" class="world-switch-overlay" hidden>
+  <div class="world-switch-popup" role="dialog"
+       aria-modal="true" aria-labelledby="world-switch-title">
+
+    <h2 id="world-switch-title">🌎 Why Switch to ESSAzLife World?</h2>
+
+    <p>ESSAzLife World is the new home for our apps! 🐮💙</p>
+
+    <p><strong>✨ Automatic Updates</strong><br>
+    Get the newest features and improvements through World!</p>
+
+    <p><strong>🏠 Everything in One Place</strong><br>
+    Access PlayMode, Handler Edition, Chorez, and future apps
+    from one convenient hub!</p>
+
+    <p><strong>👤 One World Account</strong><br>
+    Access your apps through your ESSAzLife World account.</p>
+
+    <p><strong>🎉 Future Releases</strong><br>
+    New features and content will be released through World.
+    The standalone apps will remain available in their current versions.</p>
+
+    <p><strong>📁 Bringing Your Progress?</strong><br>
+    Create a backup file in your standalone app's Profile tab.
+    Then open the matching app inside ESSAzLife World and
+    restore your backup file!</p>
+
+    <p><strong>💙 Prefer to Stay Here?</strong><br>
+    That's perfectly okay! You can keep using this standalone
+    version without switching. The choice is yours!</p>
+
+    <div class="world-switch-actions">
+      <a href="https://raisingfloofz.github.io/ESSAzLife.World/"
+         class="world-switch-visit">
+        🌎 Visit ESSAzLife World
+      </a>
+      <button type="button" id="world-switch-stay">
+        💙 Stay Here
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .world-switch-overlay[hidden] {
+    display: none !important;
+  }
+
+  .world-switch-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .world-switch-popup {
+    background: #fff;
+    color: #25354a;
+    border-radius: 16px;
+    padding: 22px;
+    width: min(100%, 440px);
+    max-height: 85vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .world-switch-popup h2 {
+    margin: 0 0 14px;
+    color: #0879d9;
+    font-size: 21px;
+  }
+
+  .world-switch-popup p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0 0 13px;
+  }
+
+  .world-switch-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .world-switch-actions a,
+  .world-switch-actions button {
+    flex: 1;
+    padding: 11px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .world-switch-visit {
+    background: #0879d9;
+    color: white;
+  }
+
+  #world-switch-stay {
+    background: #eaf2fa;
+    color: #25354a;
+    border: 1px solid #c7d9eb;
+  }
+</style>
+
+<script>
+  (() => {
+    const banner = document.getElementById("world-announcement-banner");
+    const overlay = document.getElementById("world-switch-overlay");
+    const stayButton = document.getElementById("world-switch-stay");
+
+    function openPopup() {
+      overlay.hidden = false;
+      stayButton.focus();
+    }
+
+    function closePopup() {
+      overlay.hidden = true;
+      banner.focus();
+    }
+
+    banner.addEventListener("click", openPopup);
+
+    banner.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openPopup();
+      }
+    });
+
+    stayButton.addEventListener("click", closePopup);
+
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) closePopup();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !overlay.hidden) {
+        closePopup();
+      }
+    });
+  })();
+</script>
+
 </body>
 </html>
