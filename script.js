@@ -701,31 +701,53 @@ function setCurrentUserId(
 }
 
 
+
+
+function getGuestAccount() {
+
+    const savedProfile = safeJSON(
+        "essazLife_guest_profile",
+        {}
+    );
+
+    return {
+        id: "playmode_guest",
+        username: "GUEST ACCOUNT",
+        nickname: savedProfile.nickname ?? "Guest",
+        genderIdentity: savedProfile.genderIdentity ?? "",
+        ageGroup: savedProfile.ageGroup ?? "",
+        themeColor: savedProfile.themeColor ?? "",
+        isGuest: true
+    };
+}
+
+
+
+
+
 function getCurrentUser() {
 
-    const id =
-        getCurrentUserId();
+    const id = getCurrentUserId();
 
     if (!id) {
         return null;
     }
 
+    // Recognize the local guest account.
+    if (id === "playmode_guest") {
+        return getGuestAccount();
+    }
+
+    // Existing registered accounts work as before.
     return (
         getAccounts().find(
             function(account) {
-
-                return (
-                    String(
-                        account.id
-                    ) ===
-                    String(
-                        id
-                    )
-                );
+                return String(account.id) === String(id);
             }
         ) || null
     );
 }
+
 
 
 /* =========================================================
@@ -1164,6 +1186,7 @@ function getPlayEssaStats(
 }
 
 
+
 function getSavedPlayData() {
 
     const key =
@@ -1171,23 +1194,23 @@ function getSavedPlayData() {
             "play"
         );
 
-
     const defaults =
         getDefaultPlayData();
 
-
     if (!key) {
-
-        return defaults;
+        return {
+            ...defaults,
+            ownedVoidyToys: Array.isArray(defaults.ownedVoidyToys)
+                ? defaults.ownedVoidyToys
+                : []
+        };
     }
-
 
     const saved =
         safeJSON(
             key,
             defaults
         );
-
 
     const playData = {
 
@@ -1215,18 +1238,14 @@ function getSavedPlayData() {
             Array.isArray(
                 saved.playroomCoins
             )
-
                 ? saved.playroomCoins
-
                 : [],
 
         unlockedEssaIds:
             Array.isArray(
                 saved.unlockedEssaIds
             )
-
                 ? saved.unlockedEssaIds
-
                 : [],
 
         selectedEssaId:
@@ -1244,26 +1263,32 @@ function getSavedPlayData() {
             ),
 
         essaStats:
-    (
-        saved.essaStats &&
-        typeof saved.essaStats ===
-            "object"
-    )
+            (
+                saved.essaStats &&
+                typeof saved.essaStats === "object"
+            )
+                ? saved.essaStats
+                : {},
 
-        ? saved.essaStats
+        ownedVoidyPets:
+            Array.isArray(
+                saved.ownedVoidyPets
+            )
+                ? saved.ownedVoidyPets
+                : [],
 
-        : {},
+        /* =====================================
+           PURCHASED VOIDY STORE TOYS
+        ===================================== */
 
-ownedVoidyPets:
-    Array.isArray(
-        saved.ownedVoidyPets
-    )
+        ownedVoidyToys:
+            Array.isArray(
+                saved.ownedVoidyToys
+            )
+                ? saved.ownedVoidyToys
+                : []
 
-        ? saved.ownedVoidyPets
-
-        : []
     };
-
 
     playData.unlockedEssaIds.forEach(
         function(essaId) {
@@ -1276,14 +1301,13 @@ ownedVoidyPets:
         }
     );
 
-
     savePlayData(
         playData
     );
 
-
     return playData;
 }
+
 
 
 function savePlayData(
@@ -3221,6 +3245,119 @@ function activateEmergencyBypass() {
     );
 }
 
+
+function showGuestModeWarning() {
+    document.getElementById("guest-mode-warning")?.remove();
+
+    const popup = document.createElement("div");
+    popup.id = "guest-mode-warning";
+
+    popup.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.65);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        z-index:99999;
+        padding:20px;
+        box-sizing:border-box;
+    `;
+
+    popup.innerHTML = `
+        <div style="
+            background:white;
+            color:#263238;
+            border-radius:22px;
+            padding:28px;
+            width:100%;
+            max-width:430px;
+            text-align:center;
+            box-shadow:0 10px 35px rgba(0,0,0,0.2);
+            box-sizing:border-box;
+        ">
+            <h2 style="margin-top:0;">
+                👤 Continue as Guest?
+            </h2>
+
+            <p style="line-height:1.7;">
+                That's okay! Just remember that your progress
+                is saved on this device.
+            </p>
+
+            <p style="line-height:1.7;">
+                Avoid clearing your browser's site data,
+                and remember to grab your backup file
+                from your profile!
+            </p>
+
+            <div style="
+                display:flex;
+                justify-content:center;
+                gap:12px;
+                margin-top:24px;
+                flex-wrap:wrap;
+            ">
+                <button
+                    type="button"
+                    id="guest-mode-back"
+                    style="
+                        padding:12px 22px;
+                        border:1px solid #cccccc;
+                        border-radius:12px;
+                        background:#eeeeee;
+                        color:#333;
+                        font-weight:bold;
+                        cursor:pointer;
+                    "
+                >
+                    ← Back
+                </button>
+
+                <button
+                    type="button"
+                    id="guest-mode-continue"
+                    style="
+                        padding:12px 22px;
+                        border:none;
+                        border-radius:12px;
+                        background:#4fb5ae;
+                        color:white;
+                        font-weight:bold;
+                        cursor:pointer;
+                    "
+                >
+                    Continue as Guest
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    popup.querySelector("#guest-mode-back")
+        .addEventListener("click", () => popup.remove());
+
+   
+popup.querySelector("#guest-mode-continue")
+    .addEventListener("click", () => {
+
+        // Close the guest warning.
+        popup.remove();
+
+        // Start or resume the separate guest session.
+        setCurrentUserId("playmode_guest");
+
+        // Show the normal logged-in interface.
+        showHeaderButtons(true);
+
+        // Launch the SAME PlayMode as registered players.
+        renderPlayTab();
+    });
+
+}
+
+
 /* =========================================================
    AUTH HOME
 ========================================================= */
@@ -3323,6 +3460,25 @@ function renderAuthHome() {
                 >
                     Log In
                 </button>
+
+                
+<button
+    type="button"
+    onclick="showGuestModeWarning()"
+    style="
+        padding:12px 22px;
+        border:1px solid #999999;
+        border-radius:12px;
+        background:#f3f3f3;
+        color:#333333;
+        cursor:pointer;
+        font-weight:bold;
+        font-size:14px;
+    "
+>
+    👤 Continue as Guest
+</button>
+
 
             </div>
 
@@ -5416,16 +5572,17 @@ function renderProfile() {
             </label>
 
 
-            <input
-                id="profile-username"
+            
+<input
+    id="profile-username"
+    type="text"
+    value="${escapeHTML(user.username || "")}"
+    ${user.isGuest ? "readonly" : ""}
+    style="${user.isGuest
+        ? 'background:#eeeeee; color:#666666; cursor:not-allowed;'
+        : ''}"
+>
 
-                type="text"
-
-                value="${escapeHTML(
-                    user.username ||
-                    ""
-                )}"
-            >
 
 
             <label>
@@ -5876,21 +6033,19 @@ function backupPlayModeData() {
         getSavedPlayData();
 
 
-    const backup = {
+    
+const backup = {
+    app: "ESSAzLife Play Mode",
+    backupVersion: 1,
+    createdAt: new Date().toISOString(),
 
-        app:
-            "ESSAzLife Play Mode",
+    playData: playData,
 
-        backupVersion:
-            1,
+    guestProfile: user.isGuest
+        ? safeJSON("essazLife_guest_profile", {})
+        : null
+};
 
-        createdAt:
-            new Date()
-                .toISOString(),
-
-        playData:
-            playData
-    };
 
 
     const file =
@@ -6469,6 +6624,25 @@ function saveProfile() {
 
         return;
     }
+
+    
+if (current.isGuest) {
+    const guestProfile = {
+        nickname: document.getElementById("profile-nickname").value.trim(),
+        genderIdentity: document.getElementById("profile-gender").value.trim(),
+        ageGroup: document.getElementById("profile-age-group").value,
+        themeColor: document.getElementById("profile-theme").value
+    };
+
+    localStorage.setItem(
+        "essazLife_guest_profile",
+        JSON.stringify(guestProfile)
+    );
+
+    renderPlayTab();
+    return;
+}
+
 
 
     const username =
@@ -7361,9 +7535,221 @@ function spawnPendingPlayroomCoins() {
     );
 }
 
+
+let playroomCoinRushTimer = null;
+let playroomCoinRushBusy = false;
+
+function stopPlayroomCoinRush() {
+    clearInterval(playroomCoinRushTimer);
+    playroomCoinRushTimer = null;
+    playroomCoinRushBusy = false;
+}
+
+function startPlayroomCoinRush() {
+    stopPlayroomCoinRush();
+
+    playroomCoinRushTimer = setInterval(function() {
+        const room = document.getElementById(
+            "play-house-room"
+        );
+
+        if (!room || room.dataset.roomId !== "playroom") {
+            stopPlayroomCoinRush();
+            return;
+        }
+
+        if (playroomCoinRushBusy) return;
+
+        const playData = getSavedPlayData();
+        const coins = playData.playroomCoins || [];
+
+        if (!coins.length) return;
+
+        const availableEssas = Array.from(
+            room.querySelectorAll("[data-play-house-essa]")
+        ).filter(function(wrapper) {
+            return !isPlayEssaStaying(
+                wrapper.dataset.playHouseEssa
+            );
+        });
+
+        if (!availableEssas.length) return;
+
+        const wrapper = availableEssas[
+            Math.floor(Math.random() * availableEssas.length)
+        ];
+
+        const essaId = wrapper.dataset.playHouseEssa;
+        const coin = coins[0];
+
+        if (!rushPlayroomEssaToCoin(essaId, coin)) {
+            return;
+        }
+
+        playroomCoinRushBusy = true;
+
+        setTimeout(function() {
+            const currentRoom = document.getElementById(
+                "play-house-room"
+            );
+
+            if (
+                currentRoom &&
+                currentRoom.dataset.roomId === "playroom" &&
+                !isPlayEssaStaying(essaId)
+            ) {
+                collectPlayroomCoinForEssa(coin.id);
+            }
+
+            playroomCoinRushBusy = false;
+        }, 400);
+
+    }, 500);
+}
+
+
+function rushPlayroomEssaToCoin(essaId, coin) {
+    const room = document.getElementById(
+        "play-house-room"
+    );
+
+    if (
+        !room ||
+        room.dataset.roomId !== "playroom" ||
+        isPlayEssaStaying(essaId)
+    ) {
+        return false;
+    }
+
+    const wrapper = Array.from(
+        room.querySelectorAll(
+            "[data-play-house-essa]"
+        )
+    ).find(function(element) {
+        return element.dataset.playHouseEssa === essaId;
+    });
+
+    if (!wrapper || !coin) {
+        return false;
+    }
+
+    const targetX = Math.max(
+        8,
+        Math.min(88, Number(coin.x))
+    );
+
+    const targetBottom = Math.max(
+        5,
+        Math.min(38, 100 - Number(coin.y))
+    );
+
+    const currentX =
+        parseFloat(wrapper.style.left) || 50;
+
+    const image = wrapper.querySelector(
+        ".play-house-essa-image"
+    );
+
+    if (image) {
+        image.style.transform =
+            targetX < currentX
+                ? "scaleX(-1)"
+                : "scaleX(1)";
+    }
+
+    wrapper.style.transition =
+        "left 0.35s linear, bottom 0.35s linear";
+
+    wrapper.style.left = targetX + "%";
+    wrapper.style.bottom = targetBottom + "%";
+    
+wrapper.style.top = "auto";
+
+// Remember where the ESSA ran,
+// so room redraws don't send them back.
+const houseData = getSavedPlayHouseData();
+
+houseData.essaPositions[essaId] = {
+    ...(houseData.essaPositions[essaId] || {}),
+    x: targetX,
+    floor: targetBottom
+};
+
+savePlayHouseData(houseData);
+
+return true;
+
+}
+
+
 /* =========================================================
    PLAY MODE — COLLECT PLAYROOM COIN
 ========================================================= */
+
+function collectPlayroomCoinForEssa(coinId) {
+    const playData = getSavedPlayData();
+
+    if (!Array.isArray(playData.playroomCoins)) {
+        return false;
+    }
+
+    const coinExists = playData.playroomCoins.some(
+        function(coin) {
+            return coin.id === coinId;
+        }
+    );
+
+    if (!coinExists) {
+        return false;
+    }
+
+    collectPlayroomCoin(coinId);
+
+    return true;
+}
+
+
+function findNearbyPlayroomCoin(essaId) {
+    const playData = getSavedPlayData();
+    const houseData = getSavedPlayHouseData();
+
+    if (isPlayEssaStaying(essaId)) {
+        return null;
+    }
+
+    if (!Array.isArray(playData.playroomCoins)) {
+        return null;
+    }
+
+    const position =
+        houseData.essaPositions?.[essaId];
+
+    if (!position) {
+        return null;
+    }
+
+    const essaX = Number(position.x);
+    const essaY = 100 - Number(position.floor);
+
+    if (
+        !Number.isFinite(essaX) ||
+        !Number.isFinite(essaY)
+    ) {
+        return null;
+    }
+
+    return playData.playroomCoins.find(
+        function(coin) {
+            const distance = Math.hypot(
+                essaX - Number(coin.x),
+                essaY - Number(coin.y)
+            );
+
+            return distance <= 10;
+        }
+    ) || null;
+}
+
 
 function collectPlayroomCoin(
     coinId
@@ -13799,6 +14185,33 @@ transition:
    BETTER ESSA WANDERING
 ========================================================= */
 
+
+function isPlayEssaStaying(essaId) {
+    const key = userStorageKey("essaStay");
+
+    if (!key) return false;
+
+    const saved = safeJSON(key, {});
+
+    return saved[essaId] === true;
+}
+
+function setPlayEssaStaying(essaId, staying) {
+    const key = userStorageKey("essaStay");
+
+    if (!key) return;
+
+    const saved = safeJSON(key, {});
+
+    saved[essaId] = staying === true;
+
+    localStorage.setItem(
+        key,
+        JSON.stringify(saved)
+    );
+}
+
+
 function wanderPlayHouseEssas() {
 
     const houseData =
@@ -13820,20 +14233,18 @@ function wanderPlayHouseEssas() {
                     Most ESSAs move during
                     each wandering cycle.
                 */
-                if (
-    !hasSuperEnergy &&
-    Math.random() >
-    0.82
-) {
-
-    return;
-}
-
+               
 
                 const essaId =
                     wrapper
                         .dataset
                         .playHouseEssa;
+
+                        
+if (isPlayEssaStaying(essaId)) {
+    return;
+}
+
                 
                 const playData =
     getSavedPlayData();
@@ -13945,6 +14356,10 @@ if (
             houseData
         );
     }
+
+
+
+    updateVoidyBallCarrying();
 }
 
 /* =========================================================
@@ -13978,6 +14393,13 @@ function runPartyPawsSuperEnergy() {
                     Number(
                         stats.superEnergyUntil
                     ) > Date.now();
+
+                    if (
+    !hasSuperEnergy &&
+    Math.random() > 0.82
+) {
+    return;
+}
 
 
                 if (!hasSuperEnergy) {
@@ -14068,12 +14490,18 @@ function chasePlayHouseClick(event) {
     }
 
 
-    const essas =
-        Array.from(
-            room.querySelectorAll(
-                "[data-play-house-essa]"
-            )
+    
+const essas =
+    Array.from(
+        room.querySelectorAll(
+            "[data-play-house-essa]"
+        )
+    ).filter(function(wrapper) {
+        return !isPlayEssaStaying(
+            wrapper.dataset.playHouseEssa
         );
+    });
+
 
 
     if (essas.length === 0) {
@@ -14382,227 +14810,41 @@ height:528px;
     `;
 }
     
-       if (
-        room.id ===
-        "arcade"
-    ) {
+      
+if (room.id === "arcade") {
+    return `
+        <button
+            type="button"
+            onclick="openArcadeMachineSelector()"
+            aria-label="Select an arcade machine"
+            title="Select a Machine"
+           
+style="
+    position:absolute;
+    left:50%;
+    top:22%;
+    transform:translate(-50%, -50%);
 
-        return `
-            <div
-             class="play-arcade-machines"
-                style="
-                    position:absolute;
-                    left:50%;
-                    bottom:175px;
-                    transform:translateX(-50%);
+    background:white;
+    border:3px solid #dddddd;
+    border-radius:24px;
 
-                    width:min(
-                        94%,
-                        960px
-                    );
+    padding:20px 28px;
+    font-size:90px;
+    line-height:1;
 
-                    display:grid;
+    cursor:pointer;
+    z-index:90;
 
-                    grid-template-columns:
-                        repeat(
-                            5,
-                            minmax(
-                                0,
-                                1fr
-                            )
-                        );
+    box-shadow:0 6px 16px rgba(0,0,0,0.3);
+"
 
-                    gap:12px;
-
-                    align-items:end;
-
-                    z-index:90;
-                "
-            >
-
-
-                <button
-                    onclick="
-                        openESSATwist()
-                    "
-
-                    aria-label="
-                        Play ESSATwist
-                    "
-
-                    style="
-                        padding:0;
-                        border:none;
-                        background:transparent;
-                        box-shadow:none;
-                        cursor:pointer;
-                    "
-                >
-
-                    <img
-                        src="arcade-machines/essatwist.png"
-
-                        alt="ESSATwist arcade machine"
-
-                        style="
-                            display:block;
-                            width:100%;
-                            height:auto;
-                            max-height:235px;
-                            object-fit:contain;
-                        "
-                    >
-
-                </button>
-
-
-                <button
-                    onclick="
-                        openESSAMemory()
-                    "
-
-                    aria-label="
-                        Play ESSA Memory
-                    "
-
-                    style="
-                        padding:0;
-                        border:none;
-                        background:transparent;
-                        box-shadow:none;
-                        cursor:pointer;
-                    "
-                >
-
-                    <img
-                        src="arcade-machines/memory-game.png"
-
-                        alt="ESSA Memory arcade machine"
-
-                        style="
-                            display:block;
-                            width:100%;
-                            height:auto;
-                            max-height:235px;
-                            object-fit:contain;
-                        "
-                    >
-
-  <button
-    type="button"
-
-    onclick="openESSATiles()"
-
-    aria-label="Play ESSA Tiles"
-
-    style="
-        padding:0;
-        border:none;
-        background:transparent;
-        box-shadow:none;
-        cursor:pointer;
-        position:relative;
-        z-index:100;
-    "
->
-    <img
-        src="arcade-machines/essa-tiles.png"
-        alt="ESSA Tiles arcade machine"
-
-        style="
-            display:block;
-            width:100%;
-            height:auto;
-            max-height:235px;
-            object-fit:contain;
-            pointer-events:none;
-        "
-    >
-</button>
-
-                </button>
-
-
-                <button
-                   onclick="
-                   openESSATicTacToe()
-                  "
-
-                    aria-label="
-                        ESSA Tic-Tac-Toe
-                    "
-
-                    style="
-                        padding:0;
-                        border:none;
-                        background:transparent;
-                        box-shadow:none;
-                        cursor:pointer;
-                    "
-                >
-
-                    <img
-                        src="arcade-machines/essa-tictactoe.png"
-
-                        alt="ESSA Tic-Tac-Toe arcade machine"
-
-                        style="
-                            display:block;
-                            width:100%;
-                            height:auto;
-                            max-height:235px;
-                            object-fit:contain;
-                        "
-                    >
-
-                </button>
-
-
-                <button
-                    onclick="
-                        showPlayMessage(
-                            '🔎 Find My ESSA is coming soon!'
-                        )
-                    "
-
-                    aria-label="
-                        Find My ESSA
-                    "
-
-                    style="
-                        padding:0;
-                        border:none;
-                        background:transparent;
-                        box-shadow:none;
-                        cursor:pointer;
-                    "
-                >
-
-                    <img
-                        src="arcade-machines/find-my-essa.png"
-                        
-                        onclick="
-                        openFindMyEssa()
-                        "
-
-                        alt="Find My ESSA arcade machine"
-
-                        style="
-                            display:block;
-                            width:100%;
-                            height:auto;
-                            max-height:235px;
-                            object-fit:contain;
-                        "
-                    >
-
-                </button>
-
-
-            </div>
-        `;
-
+        >
+            🎮
+        </button>
+    `;
 }
+
 
 
 
@@ -15536,6 +15778,621 @@ const voidyPetStoreItems = [
 
 
 ];
+
+
+/* =========================================
+   VOIDY'S STORE — TOY COLLECTION
+========================================= */
+
+const voidyToyStoreItems = [
+    
+{
+    id: "essa-power-ball",
+    name: "ESSA Power Ball",
+    image: "voidy-toys/essa-power-ball.png",
+    artist: "foxy861929",
+    price: 50
+},
+
+    {
+        id: "oreo-art-ball",
+        name: "Oreo Art Ball",
+        image: "voidy-toys/oreo-art-ball.png",
+        artist: "Olliez",
+        price: 50
+    },
+    {
+        id: "sheltie-ball",
+        name: "Sheltie Ball",
+        image: "voidy-toys/sheltie-ball.png",
+        artist: "Raina",
+        price: 50
+    },
+    {
+        id: "burnese-ball",
+        name: "Burnese Ball",
+        image: "voidy-toys/burnese-ball.png",
+        artist: "Horse55",
+        price: 50
+    },
+    {
+        id: "browndog-ball",
+        name: "Brown Dog Ball",
+        image: "voidy-toys/browndog-ball.png",
+        artist: "i_love_sunsets_a_lot",
+        price: 50
+    },
+    {
+        id: "browncat-ball",
+        name: "Brown Cat Ball",
+        image: "voidy-toys/browncat-ball.png",
+        artist: "i_love_sunsets_a_lot",
+        price: 50
+    }
+];
+
+
+/* =========================================
+   VOIDY'S STORE — FREE DOWNLOADABLES
+========================================= */
+
+const voidyCertificateItems = [
+    {
+        id: "certificate-pink",
+        name: "Pink Adoption Certificate",
+        image: "voidy-downloadables/certificatepink-downloadable.png",
+        artist: "Sparkling Seafoam",
+        price: 0
+    },
+    {
+        id: "certificate-blue",
+        name: "Blue Adoption Certificate",
+        image: "voidy-downloadables/certificateblue-downloadable.png",
+        artist: "Sparkling Seafoam",
+        price: 0
+    },
+    {
+        id: "certificate-green",
+        name: "Green Adoption Certificate",
+        image: "voidy-downloadables/certificategreen-downloadable.png",
+        artist: "Sparkling Seafoam",
+        price: 0
+    },
+    {
+        id: "certificate-red",
+        name: "Red Adoption Certificate",
+        image: "voidy-downloadables/certificatered-downloadable.png",
+        artist: "Sparkling Seafoam",
+        price: 0
+    }
+];
+
+
+function makeVoidyCertificateShelfItems() {
+
+    return voidyCertificateItems.map(function(item) {
+
+        return `
+            <button
+                type="button"
+                onclick="openVoidyCertificateDetails('${item.id}')"
+                title="${item.name} - FREE"
+
+                style="
+                    width:100%;
+                    max-width:130px;
+                    height:130px;
+
+                    border:none;
+                    padding:0;
+                    background:transparent;
+
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+
+                    cursor:pointer;
+                "
+            >
+                <img
+                    src="${item.image}"
+                    alt="${item.name}"
+                    draggable="false"
+
+                    style="
+                        width:100%;
+                        height:100%;
+                        object-fit:contain;
+                        pointer-events:none;
+                    "
+                >
+            </button>
+        `;
+
+    }).join("");
+}
+
+
+/* =========================================
+   VOIDY'S STORE — PURCHASE TOY
+========================================= */
+
+async function purchaseVoidyToy(toyId) {
+
+    const toy = voidyToyStoreItems.find(
+        item => item.id === toyId
+    );
+
+    if (!toy) return;
+
+    const playData = getSavedPlayData();
+
+    const currentCoins =
+        Number(playData.coins) || 0;
+
+    const price =
+        Number(toy.price) || 50;
+
+    if (currentCoins < price) {
+
+        showVoidyNotEnoughCoinsPopup(toy);
+        return;
+    }
+
+   const confirmed = await awaitVoidyToyConfirmation(toy, price);
+
+if (!confirmed) return;
+
+    const ownedToy = {
+
+        id: makeId("voidy-toy"),
+
+        originalToyId: toy.id,
+
+        name: toy.name,
+
+        image: toy.image,
+
+        purchasedAt: new Date().toISOString(),
+
+        room: "playroom",
+
+        x: 50,
+
+        y: 50
+
+    };
+
+    if (!Array.isArray(playData.ownedVoidyToys)) {
+        playData.ownedVoidyToys = [];
+    }
+
+    playData.ownedVoidyToys.push(ownedToy);
+
+    playData.coins = currentCoins - price;
+
+    savePlayData(playData);
+
+    document.getElementById(
+        "voidy-item-preview"
+    )?.remove();
+
+    showVoidyToyPurchaseSuccess(toy, playData.coins);
+}
+
+
+function awaitVoidyToyConfirmation(toy, price) {
+    return new Promise(resolve => {
+
+        document.getElementById("voidy-toy-confirm")?.remove();
+
+        const overlay = document.createElement("div");
+        overlay.id = "voidy-toy-confirm";
+
+        overlay.style.cssText = `
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.65);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:20px;
+            box-sizing:border-box;
+            z-index:100003;
+        `;
+
+        overlay.innerHTML = `
+            <div style="
+                background:white;
+                color:#17313a;
+                border-radius:24px;
+                padding:30px;
+                width:min(400px,90vw);
+                box-sizing:border-box;
+                text-align:center;
+            ">
+                <img
+                    src="${toy.image}"
+                    alt=""
+                    style="
+                        width:120px;
+                        height:120px;
+                        object-fit:contain;
+                    "
+                >
+
+                <h2>Purchase ${toy.name}?</h2>
+
+                <p>🪙 ${price} Coins</p>
+
+                <p style="font-size:12px;color:#68777b;">
+                    Artist: ${toy.artist}
+                </p>
+
+                <div style="
+                    display:flex;
+                    justify-content:center;
+                    gap:12px;
+                    margin-top:24px;
+                ">
+                    <button id="voidy-toy-cancel"
+                        style="padding:12px 22px;border:0;border-radius:12px;cursor:pointer;">
+                        Cancel
+                    </button>
+
+                    <button id="voidy-toy-yes"
+                        style="padding:12px 22px;border:0;border-radius:12px;background:black;color:white;cursor:pointer;">
+                        Purchase
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const host = document.fullscreenElement || document.body;
+        host.appendChild(overlay);
+
+        const finish = result => {
+            overlay.remove();
+            resolve(result);
+        };
+
+        overlay.querySelector("#voidy-toy-cancel")
+            .onclick = () => finish(false);
+
+        overlay.querySelector("#voidy-toy-yes")
+            .onclick = () => finish(true);
+    });
+}
+
+function showVoidyToyPurchaseSuccess(toy, remainingCoins) {
+
+    document.getElementById("voidy-toy-success")?.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "voidy-toy-success";
+
+    overlay.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.65);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+        z-index:100003;
+    `;
+
+    overlay.innerHTML = `
+        <div style="
+            background:white;
+            color:#17313a;
+            width:min(400px,90vw);
+            border-radius:24px;
+            padding:30px;
+            box-sizing:border-box;
+            text-align:center;
+        ">
+            <img
+                src="${toy.image}"
+                alt=""
+                style="
+                    width:120px;
+                    height:120px;
+                    object-fit:contain;
+                "
+            >
+
+            <h2>Purchase Successful! 🎉</h2>
+            <p>${toy.name}</p>
+            <p>🪙 Remaining Coins: ${remainingCoins}</p>
+            <p>Your new ball has been added to your collection!</p>
+
+            <button id="voidy-toy-success-close"
+                style="
+                    margin-top:16px;
+                    padding:12px 28px;
+                    border:0;
+                    border-radius:12px;
+                    background:black;
+                    color:white;
+                    cursor:pointer;
+                ">
+                Awesome!
+            </button>
+        </div>
+    `;
+
+    const host = document.fullscreenElement || document.body;
+    host.appendChild(overlay);
+
+    overlay.querySelector("#voidy-toy-success-close")
+        .onclick = () => overlay.remove();
+}
+
+
+/* =========================================
+   VOIDY'S STORE — ITEM PREVIEWS
+========================================= */
+
+function openVoidyToyDetails(toyId) {
+    const item = voidyToyStoreItems.find(
+        toy => toy.id === toyId
+    );
+
+    if (!item) return;
+
+    openVoidyItemPreview(item, "toy");
+}
+
+function openVoidyCertificateDetails(certificateId) {
+    const item = voidyCertificateItems.find(
+        certificate => certificate.id === certificateId
+    );
+
+    if (!item) return;
+
+    openVoidyItemPreview(item, "certificate");
+}
+
+function openVoidyItemPreview(item, type) {
+    document.getElementById("voidy-item-preview")?.remove();
+
+    const items = type === "toy"
+        ? voidyToyStoreItems
+        : voidyCertificateItems;
+
+    const index = items.findIndex(
+        entry => entry.id === item.id
+    );
+
+    const previous = items[
+        (index - 1 + items.length) % items.length
+    ];
+
+    const next = items[
+        (index + 1) % items.length
+    ];
+
+    const isCertificate = type === "certificate";
+
+    const overlay = document.createElement("div");
+    overlay.id = "voidy-item-preview";
+
+    overlay.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.65);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+        z-index:100002;
+    `;
+
+    overlay.innerHTML = `
+        <div style="
+            position:relative;
+            width:min(480px,92vw);
+            max-height:90vh;
+            overflow-y:auto;
+            background:white;
+            border-radius:24px;
+            padding:28px;
+            box-sizing:border-box;
+            text-align:center;
+            color:#17313a;
+            box-shadow:0 18px 50px rgba(0,0,0,.35);
+        ">
+
+            <button
+                type="button"
+                onclick="document.getElementById('voidy-item-preview')?.remove()"
+                aria-label="Close preview"
+                style="
+                    position:absolute;
+                    top:14px;
+                    right:14px;
+                    width:40px;
+                    height:40px;
+                    border:none;
+                    border-radius:50%;
+                    background:#eef3f4;
+                    font-size:22px;
+                    cursor:pointer;
+                "
+            >×</button>
+
+            <button
+                type="button"
+                id="voidy-preview-previous"
+                aria-label="Previous item"
+                style="
+                    position:absolute;
+                    left:12px;
+                    top:43%;
+                    width:42px;
+                    height:42px;
+                    border:none;
+                    border-radius:50%;
+                    background:#eef3f4;
+                    font-size:28px;
+                    cursor:pointer;
+                "
+            >‹</button>
+
+            <button
+                type="button"
+                id="voidy-preview-next"
+                aria-label="Next item"
+                style="
+                    position:absolute;
+                    right:12px;
+                    top:43%;
+                    width:42px;
+                    height:42px;
+                    border:none;
+                    border-radius:50%;
+                    background:#eef3f4;
+                    font-size:28px;
+                    cursor:pointer;
+                "
+            >›</button>
+
+            <img
+                src="${item.image}"
+                alt="${escapeHTML(item.name)}"
+                style="
+                    display:block;
+                    width:${isCertificate ? "240px" : "140px"};
+                    max-width:70%;
+                    height:${isCertificate ? "240px" : "140px"};
+                    object-fit:contain;
+                    margin:12px auto 16px;
+                "
+            >
+
+            <h2 style="margin:0 0 12px;">
+                ${escapeHTML(item.name)}
+            </h2>
+
+            <p style="
+                font-size:13px;
+                color:#68777b;
+                margin:0 0 18px;
+            ">
+                Artist: ${escapeHTML(item.artist)}
+            </p>
+
+            <p style="
+                font-size:20px;
+                font-weight:bold;
+                margin:0 0 18px;
+            ">
+                ${isCertificate ? "FREE DOWNLOAD" : "🪙 50 Coins"}
+            </p>
+
+            <button
+                type="button"
+                id="voidy-preview-action"
+                style="
+                    padding:14px 25px;
+                    border:none;
+                    border-radius:14px;
+                    background:#000;
+                    color:white;
+                    font-size:16px;
+                    font-weight:bold;
+                    cursor:pointer;
+                "
+            >
+                ${isCertificate
+                    ? "Download Certificate"
+                    : "Purchase Item?"}
+            </button>
+
+        </div>
+    `;
+
+    const popupHost =
+        document.fullscreenElement || document.body;
+
+    popupHost.appendChild(overlay);
+
+    const showItem = selected => {
+        openVoidyItemPreview(selected, type);
+    };
+
+    overlay.querySelector("#voidy-preview-previous")
+        .onclick = () => showItem(previous);
+
+    overlay.querySelector("#voidy-preview-next")
+        .onclick = () => showItem(next);
+
+    overlay.querySelector("#voidy-preview-action")
+        .onclick = () => {
+            if (isCertificate) {
+                const link = document.createElement("a");
+                link.href = item.image;
+                link.download = item.image.split("/").pop();
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            } else {
+    purchaseVoidyToy(item.id);
+}
+        };
+}
+
+
+
+function makeVoidyToyShelfItems() {
+
+    return voidyToyStoreItems.map(function(toy) {
+
+        return `
+            <button
+                type="button"
+                onclick="openVoidyToyDetails('${toy.id}')"
+
+                title="${toy.name} - ${toy.price} Coins"
+
+                style="
+                    width:100%;
+                    max-width:130px;
+                    height:130px;
+
+                    border:none;
+                    padding:0;
+                    background:transparent;
+
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+
+                    cursor:pointer;
+                "
+            >
+                <img
+                    src="${toy.image}"
+                    alt="${toy.name}"
+                    draggable="false"
+
+                    style="
+                        width:100%;
+                        height:100%;
+                        object-fit:contain;
+                        pointer-events:none;
+                    "
+                >
+            </button>
+        `;
+
+    }).join("");
+}
+
+
 
 const voidyLockedItemImage =
     "ESSAzLife.Images/PlayModeAssets/VoidyStore/locked-item.png";
@@ -18376,78 +19233,38 @@ function openVoidyStorePage(
             }
 
 
-            ${
-                pageName === "downloadables"
-                    ? `
+           
+${
+    pageName === "downloadables"
+        ? `
+            <div
+                id="voidy-toy-shelves"
+                style="
+                    position:absolute;
+                    left:50%;
+                    top:25%;
+transform:translateX(-50%);
+                    width:85%;
+                    max-width:720px;
 
-                        <button
-                            type="button"
+                    display:grid;
+                    grid-template-columns:repeat(3, 1fr);
+                    gap:16px;
 
-                            onclick="
-                                showVoidyDownloadablesMessage()
-                            "
+                    justify-items:center;
+                    align-items:center;
 
-                            aria-label="
-                                Locked Downloadables
-                            "
+                    z-index:50;
+                    pointer-events:auto;
+                "
+            >
+                ${makeVoidyToyShelfItems()}
+${makeVoidyCertificateShelfItems()}
+            </div>
+        `
+        : ""
+}
 
-                            style="
-                                position:absolute;
-
-                                left:50%;
-                                top:50%;
-
-                                transform:
-                                    translate(
-                                        -50%,
-                                        -50%
-                                    );
-
-                                width:min(
-                                    300px,
-                                    45vw
-                                );
-
-                                height:min(
-                                    300px,
-                                    55vh
-                                );
-
-                                padding:0;
-
-                                border:none;
-                                background:transparent;
-
-                                cursor:pointer;
-
-                                z-index:50;
-                            "
-                        >
-
-                            <img
-                                src="ESSAzLife.Images/PlayModeAssets/VoidyStore/locked-item.png"
-
-                                alt="Locked"
-
-                                draggable="false"
-
-                                style="
-                                    display:block;
-
-                                    width:100%;
-                                    height:100%;
-
-                                    object-fit:contain;
-
-                                    pointer-events:none;
-                                "
-                            >
-
-                        </button>
-
-                    `
-                    : ""
-            }
 
 
             ${
@@ -19920,141 +20737,6 @@ popupHost.appendChild(
     );
 }
 
-/* =========================================================
-   VOIDY DOWNLOADABLES LOCKED MESSAGE
-========================================================= */
-function showVoidyDownloadablesMessage() {
-
-    const existing =
-        document.getElementById(
-            "voidy-downloadables-message"
-        );
-
-    if (existing) {
-        existing.remove();
-    }
-
-
-    const overlay =
-        document.createElement(
-            "div"
-        );
-
-    overlay.id =
-        "voidy-downloadables-message";
-
-
-    overlay.style.cssText = `
-        position:fixed;
-        inset:0;
-
-        display:flex;
-        align-items:center;
-        justify-content:center;
-
-        padding:20px;
-        box-sizing:border-box;
-
-        background:rgba(0,0,0,.65);
-
-        z-index:1000000;
-    `;
-
-
-    overlay.innerHTML = `
-
-        <div
-            style="
-                width:min(500px, 90vw);
-
-                padding:28px;
-
-                box-sizing:border-box;
-
-                background:white;
-
-                border:
-                    4px solid
-                    var(
-                        --user-theme-color,
-                        #4fb5ae
-                    );
-
-                border-radius:24px;
-
-                text-align:center;
-
-                box-shadow:
-                    0 18px 50px
-                    rgba(0,0,0,.45);
-            "
-        >
-
-            <div
-                style="
-                    font-size:22px;
-                    font-weight:900;
-
-                    color:#17313a;
-
-                    line-height:1.5;
-                "
-            >
-                This page will eventually contain toys for ESSAs to play with.
-                The artwork is made by testers and used with permission from them.
-            </div>
-
-
-            <button
-                type="button"
-
-                onclick="
-                    document
-                        .getElementById(
-                            'voidy-downloadables-message'
-                        )
-                        ?.remove()
-                "
-
-                style="
-                    margin-top:24px;
-
-                    padding:10px 28px;
-
-                    border:none;
-                    border-radius:999px;
-
-                    background:
-                        var(
-                            --user-theme-color,
-                            #4fb5ae
-                        );
-
-                    color:white;
-
-                    font-size:17px;
-                    font-weight:900;
-
-                    cursor:pointer;
-                "
-            >
-                Okay
-            </button>
-
-        </div>
-
-    `;
-
-
-    const popupHost =
-    document.fullscreenElement ||
-    document.body;
-
-popupHost.appendChild(
-    overlay
-);
-
-}
 
 /* =========================================================
    RETRIEVE ESSA FROM VOIDY'S KENNEL
@@ -36560,6 +37242,640 @@ function getHousePlayableEssaById(
 }
 
 
+/* =========================================
+   VOIDY BALL — ESSA PICKUP AND CARRYING
+========================================= */
+
+function updateVoidyBallCarrying() {
+
+    const roomElement =
+        document.getElementById("play-house-room");
+
+    if (!roomElement) return;
+
+    const playData = getSavedPlayData();
+    const houseData = getSavedPlayHouseData();
+
+    if (!Array.isArray(playData.ownedVoidyToys)) return;
+
+    let changed = false;
+
+    const essas = [
+        ...document.querySelectorAll(
+            "[data-play-house-essa]"
+        )
+    ];
+
+    playData.ownedVoidyToys.forEach(function(toy) {
+
+        // A carried ball follows its ESSA between rooms.
+        if (toy.carriedBy) {
+
+            const carrierRoom =
+                houseData.essaRooms[toy.carriedBy];
+
+            if (carrierRoom && toy.room !== carrierRoom) {
+                toy.room = carrierRoom;
+                changed = true;
+            }
+        }
+
+        const ball = [
+            ...document.querySelectorAll(
+                ".playroom-voidy-toy"
+            )
+        ].find(el => el.dataset.toyId === toy.id);
+
+        if (!ball) return;
+
+        if (toy.carriedBy) {
+
+            const carrier = essas.find(
+                el => el.dataset.playHouseEssa === toy.carriedBy
+            );
+
+            if (!carrier) return;
+
+            const roomRect = roomElement.getBoundingClientRect();
+            const carrierRect = carrier.getBoundingClientRect();
+
+            const x =
+                ((carrierRect.left + carrierRect.width / 2
+                    - roomRect.left) / roomRect.width) * 100;
+
+            const bottom =
+                ((roomRect.bottom - carrierRect.bottom)
+                    / roomRect.height) * 100;
+
+            ball.style.left = x + "%";
+            ball.style.bottom = Math.max(2, bottom) + "%";
+
+            if (toy.x !== x) {
+                toy.x = x;
+                changed = true;
+            }
+
+            return;
+        }
+
+        // Detect a collision with an unclaimed ball.
+        const ballRect = ball.getBoundingClientRect();
+
+        const ballCenterX =
+            ballRect.left + ballRect.width / 2;
+
+        const ballCenterY =
+            ballRect.top + ballRect.height / 2;
+
+        for (const essa of essas) {
+
+            const rect = essa.getBoundingClientRect();
+
+            const dx =
+                ballCenterX - (rect.left + rect.width / 2);
+
+            const dy =
+                ballCenterY - (rect.top + rect.height / 2);
+
+            const distance = Math.hypot(dx, dy);
+
+          if (distance < 65) {
+
+    const essaId = essa.dataset.playHouseEssa;
+
+    const alreadyCarrying = playData.ownedVoidyToys.some(
+        otherToy =>
+            otherToy.id !== toy.id &&
+            otherToy.carriedBy === essaId
+    );
+
+    if (alreadyCarrying) {
+        continue;
+    }
+
+    toy.carriedBy = essaId;
+    changed = true;
+    break;
+}
+        }
+    });
+
+    if (changed) {
+        savePlayData(playData);
+    }
+}
+
+
+
+function returnVoidyBallToPlayroom(toyId) {
+    const playData = getSavedPlayData();
+
+    const toy = playData.ownedVoidyToys?.find(
+        item => item.id === toyId
+    );
+
+    if (!toy) return;
+
+    if (toy.room === "playroom" && !toy.carriedBy) {
+        return;
+    }
+
+    // Remove any previous ball confirmation popup.
+    document.getElementById(
+        "return-ball-confirm-popup"
+    )?.remove();
+
+    const popup = document.createElement("div");
+    popup.id = "return-ball-confirm-popup";
+
+    popup.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.65);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        box-sizing:border-box;
+        z-index:999999;
+    `;
+
+    popup.innerHTML = `
+        <div style="
+            width:min(420px,100%);
+            background:white;
+            border-radius:24px;
+            padding:28px;
+            box-sizing:border-box;
+            text-align:center;
+            box-shadow:0 15px 45px rgba(0,0,0,0.3);
+        ">
+            <div style="font-size:48px;margin-bottom:10px;">
+                🎾
+            </div>
+
+            <h2 style="
+                margin:0 0 12px;
+                color:var(--user-theme-color,#4fb5ae);
+            ">
+                Return Ball?
+            </h2>
+
+            <p style="
+                color:#53666d;
+                font-size:16px;
+                line-height:1.5;
+                margin-bottom:24px;
+            ">
+                Return <strong>${escapeHTML(toy.name)}</strong>
+                to the Playroom?
+            </p>
+
+            <div style="
+                display:flex;
+                gap:12px;
+                justify-content:center;
+                flex-wrap:wrap;
+            ">
+                <button id="cancel-ball-return" style="
+                    padding:12px 20px;
+                    border:1px solid #d3dde0;
+                    border-radius:14px;
+                    background:#f1f4f5;
+                    color:#344349;
+                    font-weight:bold;
+                    cursor:pointer;
+                ">
+                    Cancel
+                </button>
+
+                <button id="confirm-ball-return" style="
+                    padding:12px 20px;
+                    border:none;
+                    border-radius:14px;
+                    background:var(--user-theme-color,#4fb5ae);
+                    color:white;
+                    font-weight:bold;
+                    cursor:pointer;
+                ">
+                    🎾 Return Ball
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Keep the popup inside fullscreen.
+    const popupHost =
+        document.fullscreenElement || document.body;
+
+    popupHost.appendChild(popup);
+
+    popup.querySelector("#cancel-ball-return")
+        .addEventListener("click", function() {
+            popup.remove();
+        });
+
+    popup.querySelector("#confirm-ball-return")
+        .addEventListener("click", function() {
+            const latestPlayData = getSavedPlayData();
+
+            const latestToy =
+                latestPlayData.ownedVoidyToys?.find(
+                    item => item.id === toyId
+                );
+
+            if (!latestToy) {
+                popup.remove();
+                return;
+            }
+
+            latestToy.room = "playroom";
+            latestToy.x = 50;
+            latestToy.y = 50;
+            latestToy.carriedBy = null;
+
+            savePlayData(latestPlayData);
+
+            popup.remove();
+            renderPlayRoom();
+        });
+}
+
+
+
+function openArcadeMachineSelector() {
+    // Prevent duplicate popups
+    document.getElementById("arcade-machine-selector")?.remove();
+
+    const machines = [
+        {
+            name: "ESSATwist",
+            image: "arcade-machines/essatwist.png"
+        },
+        {
+            name: "ESSA Memory",
+            image: "arcade-machines/memory-game.png"
+        },
+        {
+            name: "ESSA Tiles",
+            image: "arcade-machines/essa-tiles.png"
+        },
+        {
+            name: "ESSA Tic-Tac-Toe",
+            image: "arcade-machines/essa-tictactoe.png"
+        },
+        {
+            name: "Find My ESSA",
+            image: "arcade-machines/find-my-essa.png"
+        }
+    ];
+
+    const popup = document.createElement("div");
+    popup.id = "arcade-machine-selector";
+
+    popup.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.7);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        z-index:99999;
+        padding:16px;
+        box-sizing:border-box;
+    `;
+
+    popup.innerHTML = `
+        <div style="
+            background:white;
+            border-radius:20px;
+            padding:22px;
+            width:100%;
+            max-width:650px;
+            max-height:85vh;
+            overflow-y:auto;
+            box-sizing:border-box;
+            text-align:center;
+            color:#222;
+        ">
+            <h2 style="margin:0 0 20px;">
+                🕹️ Select a Machine
+            </h2>
+
+            <div style="
+                display:grid;
+                grid-template-columns:repeat(
+                    auto-fit,
+                    minmax(150px,1fr)
+                );
+                gap:16px;
+            ">
+                ${machines.map((machine, index) => `
+                    <button
+                        type="button"
+                        data-machine-index="${index}"
+                        style="
+                            background:#f3f3f3;
+                            border:2px solid #ddd;
+                            border-radius:14px;
+                            padding:12px;
+                            cursor:pointer;
+                            color:#222;
+                        "
+                    >
+                        <img
+                            src="${machine.image}"
+                            alt="${machine.name}"
+                            style="
+                                width:100%;
+                               height:175px;
+                                object-fit:contain;
+                            "
+                        >
+                        <div style="
+                            margin-top:8px;
+                            font-weight:bold;
+                        ">
+                            ${machine.name}
+                        </div>
+                    </button>
+                `).join("")}
+            </div>
+
+            <button
+                type="button"
+                id="close-arcade-selector"
+                style="
+                    margin-top:22px;
+                    padding:12px 28px;
+                    border:none;
+                    border-radius:12px;
+                    background:#333;
+                    color:white;
+                    font-size:16px;
+                    cursor:pointer;
+                "
+            >
+                Close
+            </button>
+        </div>
+    `;
+
+    
+(document.fullscreenElement || document.body).appendChild(popup);
+
+
+    popup.querySelector("#close-arcade-selector")
+        .addEventListener("click", () => popup.remove());
+
+    popup.addEventListener("click", event => {
+        if (event.target === popup) {
+            popup.remove();
+        }
+    });
+
+   
+popup.querySelectorAll("[data-machine-index]").forEach(button => {
+    button.addEventListener("click", () => {
+        const machine = machines[Number(button.dataset.machineIndex)];
+
+        popup.remove();
+        openArcadeMachineDetails(machine);
+    });
+});
+
+}
+
+
+function openArcadeMachineDetails(machine) {
+    const descriptions = {
+        "ESSATwist": "Select two tiles to swap them and make three!",
+        "ESSA Memory": "Flip cards and find matching pairs.",
+        "ESSA Tiles": "Swap adjacent tiles to match three in a row.",
+        "ESSA Tic-Tac-Toe": "Get three in a row to win!",
+        "Find My ESSA": "Find the hidden ESSA!"
+    };
+
+    const games = {
+        "ESSATwist": openESSATwist,
+        "ESSA Memory": openESSAMemory,
+        "ESSA Tiles": openESSATiles,
+        "ESSA Tic-Tac-Toe": openESSATicTacToe,
+        "Find My ESSA": openFindMyEssa
+    };
+
+    const popup = document.createElement("div");
+    popup.id = "arcade-machine-details";
+
+    popup.style.cssText = `
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.7);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        z-index:99999;
+        padding:16px;
+        box-sizing:border-box;
+    `;
+
+    popup.innerHTML = `
+        <div style="
+            background:white;
+            color:#222;
+            border-radius:20px;
+            padding:24px;
+            width:100%;
+            max-width:400px;
+            max-height:85vh;
+            overflow-y:auto;
+            text-align:center;
+            box-sizing:border-box;
+        ">
+            <h2>${machine.name}</h2>
+
+            <img
+                src="${machine.image}"
+                alt="${machine.name}"
+                style="
+                    height:220px;
+                    max-width:100%;
+                    object-fit:contain;
+                "
+            >
+
+            <p style="font-size:16px;line-height:1.5;">
+                ${descriptions[machine.name]}
+            </p>
+
+            <div style="
+                display:flex;
+                justify-content:center;
+                gap:12px;
+                margin-top:20px;
+            ">
+               
+<button
+    id="arcade-back"
+    type="button"
+    style="
+        background:#eeeeee;
+        color:#333333;
+        border:2px solid #cccccc;
+        border-radius:14px;
+        padding:12px 28px;
+        font-size:16px;
+        font-weight:bold;
+        cursor:pointer;
+        box-shadow:0 3px 6px rgba(0,0,0,0.12);
+        transition:transform 0.2s ease;
+    "
+>
+    ← Back
+</button>
+
+<button
+    id="arcade-play"
+    type="button"
+    style="
+        background:#179DF4;
+        color:white;
+        border:2px solid #0879c4;
+        border-radius:14px;
+        padding:12px 32px;
+        font-size:16px;
+        font-weight:bold;
+        cursor:pointer;
+        box-shadow:0 4px 8px rgba(0,0,0,0.2);
+        transition:transform 0.2s ease;
+    "
+>
+    ▶ Play
+</button>
+
+            </div>
+        </div>
+    `;
+
+    (document.fullscreenElement || document.body).appendChild(popup);
+
+    popup.querySelector("#arcade-back").addEventListener("click", () => {
+        popup.remove();
+        openArcadeMachineSelector();
+    });
+
+    popup.querySelector("#arcade-play").addEventListener("click", () => {
+        const startGame = games[machine.name];
+
+        popup.remove();
+
+        if (typeof startGame === "function") {
+            startGame();
+        } else {
+            showPlayMessage("This game is not available yet.");
+        }
+    });
+}
+
+
+
+/* =========================================
+   VOIDY BALL — FLOOR DRAGGING
+========================================= */
+
+function enableVoidyBallDragging() {
+
+    document.querySelectorAll(".playroom-voidy-toy")
+        .forEach(function(ball) {
+
+            if (ball.dataset.dragReady === "true") return;
+            ball.dataset.dragReady = "true";
+
+            
+ball.addEventListener("click", function() {
+    const playData = getSavedPlayData();
+
+    const toy = playData.ownedVoidyToys?.find(
+        item => item.id === ball.dataset.toyId
+    );
+
+    if (!toy) return;
+
+    if (toy.room !== "playroom" || toy.carriedBy) {
+        returnVoidyBallToPlayroom(toy.id);
+    }
+});
+
+
+            let dragging = false;
+            let startX = 0;
+            let startY = 0;
+
+            ball.addEventListener("pointerdown", function(e) {
+                dragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                ball.setPointerCapture(e.pointerId);
+                ball.style.cursor = "grabbing";
+            });
+
+            ball.addEventListener("pointermove", function(e) {
+
+                if (!dragging) return;
+
+                const room = ball.parentElement;
+                const rect = room.getBoundingClientRect();
+
+                const x = Math.max(
+                    5,
+                    Math.min(
+                        95,
+                        ((e.clientX - rect.left) / rect.width) * 100
+                    )
+                );
+
+                ball.style.left = x + "%";
+            });
+
+            ball.addEventListener("pointerup", function(e) {
+
+                if (!dragging) return;
+                dragging = false;
+
+                ball.style.cursor = "grab";
+
+                const room = ball.parentElement;
+                const rect = room.getBoundingClientRect();
+
+                const x = Math.max(
+                    5,
+                    Math.min(
+                        95,
+                        ((e.clientX - rect.left) / rect.width) * 100
+                    )
+                );
+
+                const playData = getSavedPlayData();
+
+                const toy = playData.ownedVoidyToys.find(
+                    item => item.id === ball.dataset.toyId
+                );
+
+                if (toy) {
+                    toy.x = x;
+                    savePlayData(playData);
+                }
+            });
+
+            ball.addEventListener("pointercancel", function() {
+                dragging = false;
+                ball.style.cursor = "grab";
+            });
+
+        });
+}
+
+
 /* =========================================================
    CUSTOM-AWARE HOUSE RENDER
 ========================================================= */
@@ -36723,6 +38039,55 @@ function renderPlayRoom() {
 
         }
     );
+
+    
+/* =========================================
+   DISPLAY PURCHASED VOIDY TOYS
+========================================= */
+
+let voidyToysHTML = "";
+
+if (Array.isArray(playData.ownedVoidyToys)) {
+
+    playData.ownedVoidyToys.forEach(function(toy) {
+
+        if (toy.room !== room.id) {
+            return;
+        }
+
+        const x = Math.max(
+            5,
+            Math.min(95, Number(toy.x) || 50)
+        );
+
+        voidyToysHTML += `
+            <img
+                class="playroom-voidy-toy"
+                data-toy-id="${escapeHTML(toy.id)}"
+                src="${escapeHTML(toy.image)}"
+                alt="${escapeHTML(toy.name)}"
+                draggable="false"
+                style="
+                    position:absolute;
+                    left:${x}%;
+                  bottom:8%;
+transform:translateX(-50%);
+transition: left 0.5s linear, bottom 0.5s linear;
+                    width:75px;
+                    height:75px;
+                    object-fit:contain;
+                    z-index:85;
+                    cursor:grab;
+                    user-select:none;
+                    touch-action:none;
+                    filter:drop-shadow(
+                        0 4px 5px rgba(0,0,0,.25)
+                    );
+                "
+            >
+        `;
+    });
+}
 
 
     /* =====================================================
@@ -37118,11 +38483,11 @@ onclick="
                 ></div>
 
 
-                ${essasHTML}
+               ${essasHTML}
 
+${voidyToysHTML}
 
-                ${playroomCoinsHTML}
-
+${playroomCoinsHTML}
 
                 ${makePlayRoomSpecialControls(
                     room
@@ -37151,10 +38516,24 @@ onclick="
 
         </div>
 
-    `;
+        `;
 
+    enableVoidyBallDragging();
+
+    updateVoidyBallCarrying();
 
     startPlayHouseTimers();
+
+    
+if (
+    document.getElementById("play-house-room")
+        ?.dataset.roomId === "playroom"
+) {
+    startPlayroomCoinRush();
+} else {
+    stopPlayroomCoinRush();
+}
+
 }
 
 
@@ -37336,9 +38715,45 @@ function focusPlayableEssa(
 }
 
 
+
+
 /* =========================================================
    CUSTOM-AWARE FOCUS SCREEN
 ========================================================= */
+function togglePlayEssaStay(essaId) {
+    const currentlyStaying =
+        isPlayEssaStaying(essaId);
+
+    const newStayStatus =
+        !currentlyStaying;
+
+    setPlayEssaStaying(
+        essaId,
+        newStayStatus
+    );
+
+    const button =
+        document.getElementById(
+            "play-essa-stay-button"
+        );
+
+    
+if (button) {
+    button.textContent =
+        newStayStatus
+            ? "🐕 Wander"
+            : "🐾 Stay";
+
+    button.style.background =
+        newStayStatus
+            ? "#d93636"
+            : "var(--user-theme-color, #4fb5ae)";
+
+    button.style.color = "white";
+    button.style.border = "none";
+}
+
+}
 
 function renderPlayableEssaFocus(essaId) {
 
@@ -37452,6 +38867,15 @@ function renderPlayableEssaFocus(essaId) {
 
                     <button
                         class="play-action-button primary"
+                        
+style="
+    background:${isPlayEssaStaying(essa.id)
+        ? '#d93636'
+        : 'var(--user-theme-color, #4fb5ae)'};
+    color:white;
+    border:none;
+"
+
 
                         onclick="
                             renderPlayRoom()
@@ -37464,6 +38888,29 @@ function renderPlayableEssaFocus(essaId) {
                     </button>
 
                 </div>
+
+                
+<!-- STAY / WANDER BUTTON -->
+
+<div
+    style="
+        position:absolute;
+        top:18px;
+        right:18px;
+        z-index:50;
+    "
+>
+    <button
+        id="play-essa-stay-button"
+        class="play-action-button primary"
+        onclick="togglePlayEssaStay('${essa.id}')"
+    >
+        ${isPlayEssaStaying(essa.id)
+            ? "🐕 Wander"
+            : "🐾 Stay"}
+    </button>
+</div>
+
 
 
                 <!-- NEEDS -->
